@@ -9,33 +9,37 @@ The Data+ Durham evictions team is tasked with creating visualizations to furthe
 
 Over the course of a ten-week period, the Durham Evictions team at Data+, alongside the oversight of Dataworks, will begin to answer these questions while providing meaningful visualizations that can be used to further research on eviction trends in Durham with the hopes of providing policymakers with the tools and evidence to argue for legislative changes. 
 
-# Build Status
-In Progress
-
-# Screenshots
-
 # Tech/Framework Used
 [![py-3.7](https://img.shields.io/badge/Python-3.7-blue.svg)](https://www.python.org/downloads/)
 
 Packages:
 
-![npy](https://img.shields.io/badge/Numpy-1.16.3-green.svg)
-![scpy](https://img.shields.io/badge/Scipy-1.2.1-green.svg)
-![pd](https://img.shields.io/badge/Pandas-0.24.2-green.svg)
-![gpd](https://img.shields.io/badge/GeoPandas-0.5.0-green.svg)
-![bkh](https://img.shields.io/badge/Bokeh-1.2.0-green.svg)
+[![npy](https://img.shields.io/badge/Numpy-1.16.4-green.svg)](https://pypi.org/project/numpy/)
+[![scpy](https://img.shields.io/badge/Scipy-1.3.0-green.svg)](https://pypi.org/project/scipy/)
+[![pd](https://img.shields.io/badge/Pandas-0.24.2-green.svg)](https://pypi.org/project/pandas/)
+[![gpd](https://img.shields.io/badge/GeoPandas-0.5.0-green.svg)](https://pypi.org/project/geopandas/)
+[![bkh](https://img.shields.io/badge/Bokeh-1.2.0-green.svg)](https://pypi.org/project/bokeh/)
   
 # Features
+1) Interactive chloropleth map
+2) Interactive heatmap
+3) Monthly categorical heatmap (individual years normalized for comparison)
 
 # Installation
+1) Clone repo from git
 
-# API Reference
+2) Change directory to location of repo
 
-# Tests
+Terminal:
+```
+pipenv install
+pipenv shell
+```
 
 # How to Use?
+Terminal:
 
-# Contribute
+`bokeh serve _main.py`
 
 # Credits
 Data+ Team: Rodrigo Araujo, Ellis Ackerman, Samantha Miezio
