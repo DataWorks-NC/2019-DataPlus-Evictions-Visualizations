@@ -12,24 +12,18 @@ Over the course of a ten-week period, the Durham Evictions team at Data+, alongs
 # Build Status
 In Progress
 
-# Code Style
-
 # Screenshots
 
 # Tech/Framework Used
-Written in: Python 3.7
+[![py-3.7](https://img.shields.io/badge/Python-3.7-blue.svg)](https://www.python.org/downloads/)
 
-List of Packages:
+Packages:
 
-  Numpy: 1.16.3
-  
-  Scipy: 1.2.1
-  
-  Pandas: 0.24.2
-  
-  GeoPandas: 0.5.0
-  
-  Bokeh: 1.2.0
+![npy](https://img.shields.io/badge/Numpy-1.16.3-green.svg)
+![scpy](https://img.shields.io/badge/Scipy-1.2.1-green.svg)
+![pd](https://img.shields.io/badge/Pandas-0.24.2-green.svg)
+![gpd](https://img.shields.io/badge/GeoPandas-0.5.0-green.svg)
+![bkh](https://img.shields.io/badge/Bokeh-1.2.0-green.svg)
   
 # Features
 
@@ -53,4 +47,5 @@ Project Manager: Libby McClure
 Legal Aid/Eviction Diversion Program: Peter Gilbert
 
 # License
+![Data+Logo](https://bigdata.duke.edu/sites/bigdata.duke.edu/files/site-images/image002-2.jpg)
 
