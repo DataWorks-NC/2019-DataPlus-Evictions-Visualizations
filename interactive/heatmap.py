@@ -5,7 +5,7 @@ import pandas as pd
 from scipy import stats
 from bokeh.io import curdoc
 from bokeh.layouts import row, column, widgetbox, LayoutDOM
-from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar, HoverTool
+from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar, HoverTool, WheelZoomTool
 from bokeh.models.widgets import Slider, TextInput, Paragraph, CheckboxGroup
 from bokeh.plotting import figure, output_file, save, show
 from bokeh.palettes import brewer
@@ -32,8 +32,9 @@ color_bar = ColorBar(color_mapper=color_mapper, label_standoff=8, width=20,
                      height=500, border_line_color=None, location=(0,75), orientation='vertical')
 #---------------------------------------------------------------#
 # Figures
+wheel_zoom = WheelZoomTool()
 p = figure(plot_height=650, plot_width=700, title="Durham Evictions",
-           tools=['wheel_zoom', 'pan', 'save', 'reset'], tooltips=[("value", "@image")], toolbar_location='above',
+           tools=[wheel_zoom, 'pan', 'save', 'reset'], tooltips=[("value", "@image")], toolbar_location='above',
            x_range=(-8800000, -8775000), y_range=(4250000, 4350000),
            x_axis_type="mercator", y_axis_type="mercator")
 #---------------------------------------------------------------#
@@ -44,6 +45,7 @@ p.add_tile(CARTODBPOSITRON)
 p.grid.grid_line_color = None
 p.axis.visible = True
 p.add_layout(color_bar, 'right')
+p.toolbar.active_scroll = wheel_zoom
 #---------------------------------------------------------------#
 # Glyphs
 r = p.image(image='image', source=source, x='x', y='y',
@@ -55,7 +57,7 @@ s = p.circle(x='xs', y='ys', source=pointsource, size=1, fill_color='black', lin
 s.visible = False
 #---------------------------------------------------------------#
 # Widgets Setup
-year = Slider(title="", value=0, start=0, end=len(sorted_unique_dates)-1, step=1)
+year = Slider(title="", value=0, start=0, end=len(sorted_unique_dates)-1, step=1, callback_policy ='throttle', callback_throttle=500)
 year.show_value = False
 paragraph = Paragraph(text='January 2012', width=200, height=8)
 paragraph.default_size = 500
@@ -81,7 +83,7 @@ def update_data(attrname, old, new):
     title = """{input}"""
     input = title.format(input=combine[yr])
     paragraph.text = input
-year.on_change('value', update_data)    
+year.on_change('value_throttled', update_data)     
 paragraph.on_change('text', update_data)
 
 def update_opacity(attrname, old, new):
