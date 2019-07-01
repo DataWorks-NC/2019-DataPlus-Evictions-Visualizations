@@ -6,32 +6,65 @@ import geopandas as gpd
 #################################################################
 # Load Data
 k = 'Summary Ejectment'
-df = pd.read_csv('./data/evictions_months.csv')
-gdf_full = gpd.read_file('./data/durham_tracts/durhamtract.shp')
-df_date = df
+df_tract_m = pd.read_csv('./data/evictions_tract_months.csv')
+df_tract_y = pd.read_csv('./data/dataworksnc_housing_summary_ejectments__tract__year.csv')
+df_blockg_m = pd.read_csv('./data/evictions_blockgroup_months.csv')
+df_blockg_y = pd.read_csv('./data/dataworksnc_housing_summary_ejectments__blockgroup__year.csv')
+df_date = pd.read_csv('./data/evictionslatlong.csv')
+gdf_tract = gpd.read_file('./data/durham_tracts/durhamtracts.shp')
+gdf_blockg = gpd.read_file('./data/durham_blockgroups/durhamblockgroups.shp')
 #---------------------------------------------------------------#
 # Manipulate Data for Plotting
-df = df.query('process == @k')
-df = df.drop(['docket_num', 'tract_name', 'year', 'month', 'process'], axis=1)
-df = df.groupby('fips').sum()
-df.reset_index(level=0, inplace=True)
-gdf = gdf_full[['fips', 'feature_na', 'geometry']]
+df_tract_m = df_tract_m.query('process == @k')
+df_blockg_m = df_blockg_m.query('process == @k')
 
-for i in range(len(gdf.feature_na)): 
-    gdf.feature_na[i] = gdf.feature_na[i][13:] # substring feature_na
+temp1 = df_tract_m[['fips','tract']]
+temp1 = temp1.drop_duplicates()
+temp1.reset_index(drop=True)
 
-df.fips = df.fips.astype(object)
-for i in range(60):
-    gdf.fips[i] = int(gdf.fips[i]) # convert fips into integer
+temp2 = df_blockg_m[['fips','tract', 'blockgroup']]
+temp2 = temp2.drop_duplicates()
+temp2.reset_index(drop=True)
+
+df_tract_m = df_tract_m.drop(['docket_num', 'year', 'month', 'process', 'tract', 'status_date'], axis=1)
+df_tract_m = df_tract_m.groupby('fips').sum()
+df_tract_m.reset_index(level=0, inplace=True)
+tract_month = df_tract_m.merge(temp1, left_on='fips', right_on='fips')
+
+df_blockg_m = df_blockg_m.drop(['docket_num', 'year', 'month', 'process', 'tract', 'blockgroup', 'status_date'], axis=1)
+df_blockg_m = df_blockg_m.groupby('fips').sum()
+df_blockg_m.reset_index(level=0, inplace=True)
+blockg_month = df_blockg_m.merge(temp2, left_on='fips', right_on='fips')
+
+tract_year = df_tract_y.merge(temp1, left_on='fips', right_on='fips')
+blockg_year = df_blockg_y.merge(temp2, left_on='fips', right_on='fips')
+
+
+gdf_t = gdf_tract[['fips', 'geometry', 'area__sqmi']]
+gdf_bg = gdf_blockg[['fips', 'geometry', 'area__sqmi']]
+
+for i in range(len(gdf_t)):
+    gdf_t.fips[i] = int(gdf_t.fips[i]) # convert fips into integer
+
+for i in range(len(gdf_bg)):
+    gdf_bg.fips[i] = int(gdf_bg.fips[i]) # convert fips into integer
 #---------------------------------------------------------------#
 # Grab and Convert Coords from Shapefile
-gdf['poly_x'] = gdf.apply(fn.getPolyCoords, coord_type='x', axis=1)
-gdf['poly_y'] = gdf.apply(fn.getPolyCoords, coord_type='y', axis=1)
-gdf['xs'] = gdf.poly_x.map(fn.conv_poly_xs)
-gdf['ys'] = gdf.poly_y.map(fn.conv_poly_ys)
+gdf_t['poly_x'] = gdf_t.apply(fn.getPolyCoords, coord_type='x', axis=1)
+gdf_t['poly_y'] = gdf_t.apply(fn.getPolyCoords, coord_type='y', axis=1)
+gdf_t['xs'] = gdf_t.poly_x.map(fn.conv_poly_xs)
+gdf_t['ys'] = gdf_t.poly_y.map(fn.conv_poly_ys)
+
+gdf_bg['poly_x'] = gdf_bg.apply(fn.getPolyCoords, coord_type='x', axis=1)
+gdf_bg['poly_y'] = gdf_bg.apply(fn.getPolyCoords, coord_type='y', axis=1)
+gdf_bg['xs'] = gdf_bg.poly_x.map(fn.conv_poly_xs)
+gdf_bg['ys'] = gdf_bg.poly_y.map(fn.conv_poly_ys)
 #---------------------------------------------------------------#
 # Merge Evictions Dataset with Shapefile
-mdf = gdf.merge(df, right_on='fips', left_on='fips', how='outer')
+mdf1 = gdf_t.merge(tract_month, right_on='fips', left_on='fips', how='outer')
+mdf2 = gdf_t.merge(tract_year, right_on='fips', left_on='fips', how='outer')
+mdf3 = gdf_bg.merge(blockg_month, right_on='fips', left_on='fips', how='outer')
+mdf4 = gdf_bg.merge(blockg_year, right_on='fips', left_on='fips', how='outer')
 #---------------------------------------------------------------#
 # Grab Individual Eviction Points
 df_date['date'] = df_date['status_date'].apply(fn.time)
@@ -47,5 +80,8 @@ df_dates = pd.DataFrame({'sorted_unique_dates': sorted_unique_dates})
 df_date.to_pickle('./pickled_files/df_date.pkl')
 df_dates.to_pickle('./pickled_files/sorted2.pkl')
 initial.to_pickle('./pickled_files/initial2.pkl')
-mdf.to_pickle('./pickled_files/mdf.pkl')
+mdf1.to_pickle('./pickled_files/mdf1.pkl')
+mdf2.to_pickle('./pickled_files/mdf2.pkl')
+mdf3.to_pickle('./pickled_files/mdf3.pkl')
+mdf4.to_pickle('./pickled_files/mdf4.pkl')
 #---------------------------------------------------------------#
