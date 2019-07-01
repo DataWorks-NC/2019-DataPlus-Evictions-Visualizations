@@ -5,7 +5,7 @@ import pandas as pd
 import geopandas as gpd
 from bokeh.io import curdoc
 from bokeh.layouts import row, column, widgetbox
-from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar, HoverTool
+from bokeh.models import ColumnDataSource, LinearColorMapper, ColorBar, HoverTool, WheelZoomTool
 from bokeh.models.widgets import Slider, Paragraph, CheckboxGroup, Select
 from bokeh.plotting import figure, output_file, save, show
 from bokeh.palettes import brewer
@@ -34,10 +34,11 @@ color_bar = ColorBar(color_mapper=color_mapper, label_standoff=8, width=20,
 #---------------------------------------------------------------#
 # Figures
 hover = HoverTool(tooltips=[('Tract', '@tract'), ('# of evictions', '@evics')])
-p = figure(plot_height=650, plot_width=700, title="Tract Evictions, Durham",
-           tools=[hover,'wheel_zoom', 'pan', 'save', 'reset'], 
+wheel_zoom = WheelZoomTool()
+p = figure(plot_height=650, plot_width=700, title='Tract Evictions, Durham',
+           tools=[hover, wheel_zoom, 'pan', 'save', 'reset'], 
            toolbar_location='above', x_range=(-8800000, -8775000), y_range=(4250000, 4350000),
-           x_axis_type="mercator", y_axis_type="mercator")
+           x_axis_type='mercator', y_axis_type='mercator')
 #---------------------------------------------------------------#
 # Map Setup
 p.axis.visible = False
@@ -46,6 +47,7 @@ p.add_tile(CARTODBPOSITRON)
 p.grid.grid_line_color = None
 p.axis.visible = True
 p.add_layout(color_bar, 'right')
+p.toolbar.active_scroll = wheel_zoom
 #---------------------------------------------------------------#
 # Glyphs
 r = p.patches('xs', 'ys', source=source, fill_color={'field': 'evics', 'transform': color_mapper},
@@ -54,16 +56,16 @@ s = p.circle(x='xs', y='ys', source=pointsource, size=1, fill_color='black', lin
 s.visible = False
 #---------------------------------------------------------------#
 # Widgets Setup
-year = Slider(title="", value=0, start=0, end=len(sorted_unique_dates)-1, step=1)
+year = Slider(title='', value=0, start=0, end=len(sorted_unique_dates)-1, step=1, callback_policy ='throttle', callback_throttle=500)
 year.show_value = False
-year2 = Slider(title="", value=2012, start=2012, end=2018, step=1)
+year2 = Slider(title='', value=2012, start=2012, end=2018, step=1, callback_policy ='throttle', callback_throttle=500)
 year2.visible = False
 paragraph = Paragraph(text='January 2012', width=200, height=8)
 paragraph.default_size = 500
 opacity = Slider(title='Opacity', value=0.6, start=0, end=1.0, step=0.1)
-checkbox = CheckboxGroup(labels=["Eviction Points"], active=[])
-select_census = Select(title="Census Display:", value="Census Tracts", options=["Census Tracts", "Census BlockGroups"])
-select_time = Select(title="Timeframe:", value="Months", options=["Months", "Years"])
+checkbox = CheckboxGroup(labels=['Eviction Points'], active=[])
+select_census = Select(title='Census Display:', value='Census Tracts', options=['Census Tracts', 'Census BlockGroups'])
+select_time = Select(title='Timeframe:', value='Months', options=['Months', 'Years'])
 #---------------------------------------------------------------#
 # Set Up Callbacks
 lower_case = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
@@ -130,7 +132,7 @@ def update_data(attrname, old, new):
         year2.visible = False
         year.visible = True
         index = year.value
-        title = """{input}"""
+        title = '''{input}'''
         input = title.format(input=combine[index])
         # Generate the new dataset
         new_data = df_date[df_date['date'] == sorted_unique_dates[index]]
@@ -161,8 +163,8 @@ def update_data(attrname, old, new):
         hover.tooltips = [('Tract', '@tract'), ('BlockGroup', '@blockgroup'), ('# of evictions', '@evics')]
 
 
-year.on_change('value', update_data)
-year2.on_change('value', update_data)
+year.on_change('value_throttled', update_data)
+year2.on_change('value_throttled', update_data)
 paragraph.on_change('text', update_data)
 
 def update_opacity(attrname, old, new):
