@@ -101,6 +101,15 @@ def monthConverter(input):
     if month == 12:
         return 'Dec'  
 
+def load_data(schema, table):
 
+    sql_command = "SELECT * FROM {}.{};".format(str(schema), str(table))
+    print ('sql command: '+sql_command)
+
+    # Load the data
+    data = pd.read_sql(sql_command, conn)
+
+    print('data shape: '+str(data.shape))
+    return (data)
 
               
