@@ -20,7 +20,7 @@ Packages:
 [![gpd](https://img.shields.io/badge/GeoPandas-0.5.0-green.svg)](https://pypi.org/project/geopandas/)
 [![bkh](https://img.shields.io/badge/Bokeh-1.2.0-green.svg)](https://pypi.org/project/bokeh/)
 [![psycopg2](https://img.shields.io/badge/psycopg-2.8.3-green.svg)](https://pypi.org/project/psycopg2/)
-  
+[![DateTime](https://img.shields.io/badge/DateTime-4.3-green.svg)](https://pypi.org/project/DateTime/) 
 # Features
 1) Interactive chloropleth map
 2) Interactive heatmap
