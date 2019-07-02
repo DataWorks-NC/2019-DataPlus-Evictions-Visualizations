@@ -64,10 +64,10 @@ with Bar('Making KDEs', max=barmax,fill='#') as bar:
 		#normalize and nan it
 		norm = fn.normalize(density)
 		Norm = fn.normalize(density)
-		for i in range(bins):
+		for k in range(bins):
 			for j in range(bins):
-				if norm[i][j] < tolerance:
-					norm[i][j] = np.nan
+				if norm[k][j] < tolerance:
+					norm[k][j] = np.nan
 				bar.next()
 		norm=np.array(norm)
 		normframe_nans.append(norm)
