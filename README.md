@@ -27,10 +27,14 @@ Packages:
 2) Interactive heatmap
 3) Monthly categorical heatmap (individual years normalized for comparison)
 
+# Prerequisites
+
+You need to have pipenv installed and configured correctly before getting started.
+
 # Installation
 1) Clone repo from git
 
-2) Change directory to location of repo
+2) Change directory to repo location
 
 Terminal:
 ```
@@ -41,7 +45,11 @@ pipenv shell
 # How to Use?
 Terminal:
 
-`bokeh serve _main.py`
+`bokeh serve interactive/`
+# Code Architecture 
+The general code structure, interactions, and dependencies. 
+![code](https://raw.githubusercontent.com/DataWorks-NC/evictions/heroku-deploy/code_structure.jpg?token=AJPOEXTRVPQFRQNA52EWD625EYMYO)
+
 
 # Code Architecture 
 The general code structure, interactions, and dependencies. 
@@ -50,7 +58,7 @@ The general code structure, interactions, and dependencies.
 # Credits
 Data+ Team: Rodrigo Araujo, Ellis Ackerman, Samantha Miezio
 
-DataWorks Team: John Killeen, L’Tanya Durante, Tim Stallman
+DataWorks Team: John Killeen, L’Tanya Durante, Tim Stallmann
 
 Project Manager: Libby McClure
 
