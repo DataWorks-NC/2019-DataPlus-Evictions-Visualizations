@@ -28,7 +28,7 @@ cursor = conn.cursor()
 #test eviction data loading
 evictions=fn.load_data('housing','evictions')
 summary_ejectments_blockgroup_year=fn.load_data('housing','summary_ejectments__blockgroup__year')
-summary_ejectments_tract_year=fn.load_data('housing','summary_ejectments__tract__year.')
+summary_ejectments_tract_year=fn.load_data('housing','summary_ejectments__tract__year')
 #evictions_blockgroup_months.csv# to add
 #evictions_tract_months.csv# to add
 #evictionslatlong.csv# to add
