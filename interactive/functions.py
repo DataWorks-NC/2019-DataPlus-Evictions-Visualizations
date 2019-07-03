@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import os
 from scipy import stats
 
 def reflect(input):
@@ -111,5 +112,9 @@ def load_data(schema, table):
 
     print('data shape: '+str(data.shape))
     return (data)
+
+
+def get_base_dir():
+    return os.path.dirname(__file__)
 
               
