@@ -47,7 +47,8 @@ Terminal:
 
 `bokeh serve interactive/`
 # Code Architecture 
-[![code](https://raw.githubusercontent.com/DataWorks-NC/evictions/heroku-deploy/code_structure.jpg?token=AJPOEXTRVPQFRQNA52EWD625EYMYO)]
+The general code structure, interactions and dependencies. 
+![code](https://raw.githubusercontent.com/DataWorks-NC/evictions/heroku-deploy/code_structure.jpg?token=AJPOEXTRVPQFRQNA52EWD625EYMYO)
 
 
 # Credits
