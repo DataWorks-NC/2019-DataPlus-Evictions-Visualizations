@@ -46,6 +46,9 @@ pipenv shell
 Terminal:
 
 `bokeh serve interactive/`
+# Code Architecture 
+[![code](https://raw.githubusercontent.com/DataWorks-NC/evictions/heroku-deploy/code_structure.jpg?token=AJPOEXTRVPQFRQNA52EWD625EYMYO)]
+
 
 # Credits
 Data+ Team: Rodrigo Araujo, Ellis Ackerman, Samantha Miezio
