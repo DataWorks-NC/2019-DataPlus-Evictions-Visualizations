@@ -27,10 +27,14 @@ Packages:
 2) Interactive heatmap
 3) Monthly categorical heatmap (individual years normalized for comparison)
 
+# Prerequisites
+
+You need to have pipenv installed and configured correctly before getting started.
+
 # Installation
 1) Clone repo from git
 
-2) Change directory to location of repo
+2) Change directory to repo location
 
 Terminal:
 ```
@@ -41,12 +45,12 @@ pipenv shell
 # How to Use?
 Terminal:
 
-`bokeh serve _main.py`
+`bokeh serve interactive/`
 
 # Credits
 Data+ Team: Rodrigo Araujo, Ellis Ackerman, Samantha Miezio
 
-DataWorks Team: John Killeen, L’Tanya Durante, Tim Stallman
+DataWorks Team: John Killeen, L’Tanya Durante, Tim Stallmann
 
 Project Manager: Libby McClure
 

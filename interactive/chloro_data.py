@@ -1,18 +1,18 @@
 #setting up data for Chloropleth
 #import
-import _functions as fn
+import functions as fn
 import pandas as pd
 import geopandas as gpd
 #################################################################
 # Load Data
 k = 'Summary Ejectment'
-df_tract_m = pd.read_csv('./data/evictions_tract_months.csv')
-df_tract_y = pd.read_csv('./data/dataworksnc_housing_summary_ejectments__tract__year.csv')
-df_blockg_m = pd.read_csv('./data/evictions_blockgroup_months.csv')
-df_blockg_y = pd.read_csv('./data/dataworksnc_housing_summary_ejectments__blockgroup__year.csv')
-df_date = pd.read_csv('./data/evictionslatlong.csv')
-gdf_tract = gpd.read_file('./data/durham_tracts/durhamtracts.shp')
-gdf_blockg = gpd.read_file('./data/durham_blockgroups/durhamblockgroups.shp')
+df_tract_m = pd.read_csv(/evictions_tract_months.csv')
+df_tract_y = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__tract__year.csv')
+df_blockg_m = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_blockgroup_months.csv')
+df_blockg_y = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__blockgroup__year.csv')
+df_date = pd.read_csv(f'{fn.get_base_dir()}/data/evictionslatlong.csv')
+gdf_tract = gpd.read_file(f'{fn.get_base_dir()}/data/durham_tracts/durhamtracts.shp')
+gdf_blockg = gpd.read_file(f'{fn.get_base_dir()}/data/durham_blockgroups/durhamblockgroups.shp')
 #---------------------------------------------------------------#
 # Manipulate Data for Plotting
 df_tract_m = df_tract_m.query('process == @k')
@@ -77,11 +77,11 @@ initial = df_date[df_date['date'] == sorted_unique_dates[0]]
 df_dates = pd.DataFrame({'sorted_unique_dates': sorted_unique_dates})
 #---------------------------------------------------------------#
 # Output Pickle
-df_date.to_pickle('./pickled_files/df_date.pkl')
-df_dates.to_pickle('./pickled_files/sorted2.pkl')
-initial.to_pickle('./pickled_files/initial2.pkl')
-mdf1.to_pickle('./pickled_files/mdf1.pkl')
-mdf2.to_pickle('./pickled_files/mdf2.pkl')
-mdf3.to_pickle('./pickled_files/mdf3.pkl')
-mdf4.to_pickle('./pickled_files/mdf4.pkl')
+df_date.to_pickle(f'{fn.get_base_dir()}/pickled_files/df_date.pkl')
+df_dates.to_pickle(f'{fn.get_base_dir()}/pickled_files/sorted2.pkl')
+initial.to_pickle(f'{fn.get_base_dir()}/pickled_files/initial2.pkl')
+mdf1.to_pickle(f'{fn.get_base_dir()}/pickled_files/mdf1.pkl')
+mdf2.to_pickle(f'{fn.get_base_dir()}/pickled_files/mdf2.pkl')
+mdf3.to_pickle(f'{fn.get_base_dir()}/pickled_files/mdf3.pkl')
+mdf4.to_pickle(f'{fn.get_base_dir()}/pickled_files/mdf4.pkl')
 #---------------------------------------------------------------#
