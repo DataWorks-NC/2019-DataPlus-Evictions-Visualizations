@@ -43,6 +43,10 @@ Terminal:
 
 `bokeh serve _main.py`
 
+# Code Architecture 
+The general code structure, interactions, and dependencies. 
+![code](https://raw.githubusercontent.com/DataWorks-NC/evictions/master/code_structure.jpg?token=AJPOEXQY6FBLTPBLODV7IE25EYOFY)
+
 # Credits
 Data+ Team: Rodrigo Araujo, Ellis Ackerman, Samantha Miezio
 
