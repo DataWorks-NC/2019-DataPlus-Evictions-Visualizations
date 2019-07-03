@@ -1,6 +1,6 @@
 #reading pickles and plotting results
 #import
-import _functions as fn
+import functions as fn
 import pandas as pd
 import geopandas as gpd
 from bokeh.io import curdoc
@@ -12,13 +12,14 @@ from bokeh.palettes import brewer
 from bokeh.tile_providers import get_provider, Vendors, CARTODBPOSITRON
 #################################################################
 # Load Pickles Dataframes
-mdf1 = pd.read_pickle('./pickled_files/mdf1.pkl')
-mdf2 = pd.read_pickle('./pickled_files/mdf2.pkl')
-mdf3 = pd.read_pickle('./pickled_files/mdf3.pkl')
-mdf4 = pd.read_pickle('./pickled_files/mdf4.pkl')
-initial = pd.read_pickle('./pickled_files/initial2.pkl')
-df_date = pd.read_pickle('./pickled_files/df_date.pkl')
-df_sorted = pd.read_pickle('./pickled_files/sorted2.pkl')
+
+mdf1 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf1.pkl')
+mdf2 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf2.pkl')
+mdf3 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf3.pkl')
+mdf4 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf4.pkl')
+initial = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/initial2.pkl')
+df_date = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/df_date.pkl')
+df_sorted = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/sorted2.pkl')
 sorted_unique_dates = df_sorted.sorted_unique_dates.tolist()
 #---------------------------------------------------------------#
 # ColumnDataSource Setup

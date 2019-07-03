@@ -6,11 +6,12 @@ from bokeh.io import show
 from bokeh.models import LinearColorMapper, BasicTicker, ColorBar
 from bokeh.plotting import figure
 from bokeh.palettes import brewer
+from functions import get_base_dir
 #################################################################
 # Load Pickles Dataframes
-df = pd.read_pickle('./pickled_files/df_calendar.pkl')
-years = np.load('./npy/years.npy')
-months = np.load('./npy/months.npy')
+df = pd.read_pickle(f'{get_base_dir()}/pickled_files/df_calendar.pkl')
+years = np.load(f'{get_base_dir()}/npy/years.npy')
+months = np.load(f'{get_base_dir()}/npy/months.npy')
 #---------------------------------------------------------------#
 # Palette Setup
 palette = ['#084594', '#2171b5', '#4292c6', '#6baed6', '#9ecae1', '#c6dbef', '#deebf7', '#f7fbff']

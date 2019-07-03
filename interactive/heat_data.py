@@ -1,13 +1,13 @@
 #creating KDE data frame
 #imports
-import _functions as fn
+import functions as fn
 import numpy as np
 import pandas as pd
 from scipy import stats
 from progress.bar import Bar  
 #################################################################
 #data path
-data_path='./data/evictionslatlong.csv'
+data_path= f'{fn.get_base_dir()}/data/evictionslatlong.csv'
 #user controled parameters
 bins = 250
 tolerance = 0.01   #for KDEs
@@ -33,19 +33,19 @@ dates=df['date'].tolist()
 unique_dates=list(set(dates))
 sorted_unique_dates=sorted(unique_dates)
 df_dates = pd.DataFrame({'sorted_unique_dates': sorted_unique_dates})
-df_dates.to_pickle('./pickled_files/sorted.pkl')
+df_dates.to_pickle(f'{fn.get_base_dir()}/pickled_files/sorted.pkl')
 #---------------------------------------------------------------#
 #saving max and mins
 df_max_min = pd.DataFrame({'xmin': fn.conv_poly_xs([min(-1 * np.array(xy[0]))]),'xmax': fn.conv_poly_xs([max(-1 * np.array(xy[0]))]),
-                           'ymin': fn.conv_poly_ys([min(xy[1])]),'ymax': fn.conv_poly_ys([max(xy[1])]),'xs': [xy[0]],'ys': [xy[1]]})
-df_max_min.to_pickle('./pickled_files/maxmin.pkl')
+                         'ymin': fn.conv_poly_ys([min(xy[1])]),'ymax': fn.conv_poly_ys([max(xy[1])]),'xs': [xy[0]],'ys': [xy[1]]})
+df_max_min.to_pickle(f'{fn.get_base_dir()}/pickled_files/maxmin.pkl')
 #---------------------------------------------------------------#
 df['xneg']=df['x'].apply(fn.reflect)
 df['XX']=df['xneg'].apply(fn.convX)
 df['YY']=df['y'].apply(fn.convY)
 initial=df[df['date']==sorted_unique_dates[0]]
-initial.to_pickle('./pickled_files/initial.pkl')
-df.to_pickle('./pickled_files/df.pkl')
+initial.to_pickle(f'{fn.get_base_dir()}/pickled_files/initial.pkl')
+df.to_pickle(f'{fn.get_base_dir()}/pickled_files/df.pkl')
 #---------------------------------------------------------------#
 #KDEs
 normframe=[]
@@ -76,7 +76,7 @@ with Bar('Making KDEs', max=barmax,fill='#') as bar:
 #---------------------------------------------------------------#
 # create dataframe
 heat_map_df=pd.DataFrame({'date':sorted_unique_dates,'KDE':normframe_nans,'KDE_raw':normframe})
-heat_map_df.to_pickle('./pickled_files/KDE_df.pkl')
+heat_map_df.to_pickle(f'{fn.get_base_dir()}/pickled_files/KDE_df.pkl')
 #---------------------------------------------------------------#
 # #producing KDE differences 
 # normframe_diff=[]
@@ -100,7 +100,7 @@ heat_map_df.to_pickle('./pickled_files/KDE_df.pkl')
 # 				bar.next()
 # 		normframe_diff_nans.append(Normed_delta)
 # heat_map_diff_df=pd.DataFrame({'date_range':date_ranges,'KDE_diffs':normframe_diff_nans,'KDE_diffs_raw':normframe_diff})
-# heat_map_diff_df.to_pickle('./pickled_files/KDE_diffs_df.pkl')
+# heat_map_diff_df.to_pickle('/pickled_files/KDE_diffs_df.pkl')
 # #---------------------------------------------------------------#
 # #total durham changes
 # total_diffs=sum(normframe_diff)
@@ -115,5 +115,5 @@ heat_map_df.to_pickle('./pickled_files/KDE_df.pkl')
 # 			bar.next()	
 # normed_total_diffs = fn.normalize2(total_diffs)
 # total_diff_df=pd.DataFrame({'type':['total_diff'],'KDE_tdiff':[total_diffs_nans],'KDE_tdiff_raw':[total_diffs]})
-# total_diff_df.to_pickle('./pickled_files/KDE_sum_diffs_df.pkl')
+# total_diff_df.to_pickle('/pickled_files/KDE_sum_diffs_df.pkl')
 # #---------------------------------------------------------------#
