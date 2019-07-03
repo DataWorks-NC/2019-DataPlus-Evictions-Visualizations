@@ -6,7 +6,7 @@ import geopandas as gpd
 #################################################################
 # Load Data
 k = 'Summary Ejectment'
-df_tract_m = pd.read_csv(/evictions_tract_months.csv')
+df_tract_m = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_tract_months.csv')
 df_tract_y = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__tract__year.csv')
 df_blockg_m = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_blockgroup_months.csv')
 df_blockg_y = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__blockgroup__year.csv')
