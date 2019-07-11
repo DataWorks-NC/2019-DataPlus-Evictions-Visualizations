@@ -19,7 +19,7 @@ sorted_unique_dates = df_dates.sorted_unique_dates.tolist()
 initial = pd.read_pickle(f'{get_base_dir()}/pickled_files/initial.pkl')
 
 normframe=[]
-for i in ranhe(0,len(sorted_unique_dates)):
+for i in range(0,len(sorted_unique_dates)):
   df = pd.read_pickle(f'{get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
   normframe.append(df['KDE'].tolist()[0])
 #---------------------------------------------------------------#
