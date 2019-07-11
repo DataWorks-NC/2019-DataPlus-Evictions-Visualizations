@@ -12,14 +12,16 @@ from bokeh.palettes import brewer
 from bokeh.tile_providers import get_provider, Vendors, CARTODBPOSITRON
 from functions import get_base_dir
 #################################################################
-# Load Pickles Dataframes
-initial = pd.read_pickle(f'{get_base_dir()}/pickled_files/initial.pkl')
-df_heat_maps = pd.read_pickle(f'{get_base_dir()}/pickled_files/KDE_df.pkl')
-normframe = df_heat_maps['KDE'].tolist()
-df = pd.read_pickle(f'{get_base_dir()}/pickled_files/df.pkl')
+# Load Pickles Dataframesdf = pd.read_pickle(f'{get_base_dir()}/pickled_files/df.pkl')
 df_max_min = pd.read_pickle(f'{get_base_dir()}/pickled_files/maxmin.pkl')
 df_dates = pd.read_pickle(f'{get_base_dir()}/pickled_files/sorted.pkl')
 sorted_unique_dates = df_dates.sorted_unique_dates.tolist()
+initial = pd.read_pickle(f'{get_base_dir()}/pickled_files/initial.pkl')
+
+normframe=[]
+for i in ranhe(0,len(sorted_unique_dates)):
+  df = pd.read_pickle(f'{get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
+  normframe.append(df['KDE'].tolist()[0])
 #---------------------------------------------------------------#
 # ColumnDataSource Setup
 source = ColumnDataSource(data=dict(image=[normframe[0]], x=df_max_min.xmin, y=df_max_min.ymin))
