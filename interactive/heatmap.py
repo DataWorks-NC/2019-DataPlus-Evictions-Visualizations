@@ -12,22 +12,11 @@ from bokeh.palettes import brewer
 from bokeh.tile_providers import get_provider, Vendors, CARTODBPOSITRON
 from functions import get_base_dir
 #################################################################
-# Load Pickles Dataframesdf = pd.read_pickle(f'{get_base_dir()}/pickled_files/df.pkl')
-# df_max_min = pd.read_pickle(f'{get_base_dir()}/pickled_files/maxmin.pkl')
-# df_dates = pd.read_pickle(f'{get_base_dir()}/pickled_files/sorted.pkl')
-# sorted_unique_dates = df_dates.sorted_unique_dates.tolist()
-# initial = pd.read_pickle(f'{get_base_dir()}/pickled_files/initial.pkl')
-
-# normframe=[]
-# for i in range(0,len(sorted_unique_dates)):
-#   df = pd.read_pickle(f'{get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
-#   normframe.append(df['KDE'].tolist()[0])
-df=pd.read_pickle(f'{get_base_dir()}/pickled_files/df.pkl')
-df_max_min=pd.read_pickle(f'{get_base_dir()}/pickled_files/maxmin.pkl')
-
-dates=df['date'].tolist()
-unique_dates=list(set(dates))
-sorted_unique_dates=sorted(unique_dates)
+df = pd.read_pickle(f'{get_base_dir()}/pickled_files/df.pkl')
+df_max_min = pd.read_pickle(f'{get_base_dir()}/pickled_files/maxmin.pkl')
+df_dates = pd.read_pickle(f'{get_base_dir()}/pickled_files/sorted.pkl')
+sorted_unique_dates = df_dates.sorted_unique_dates.tolist()
+initial = pd.read_pickle(f'{get_base_dir()}/pickled_files/initial.pkl')
 
 normframe=[]
 for i in range(0,len(sorted_unique_dates)):
