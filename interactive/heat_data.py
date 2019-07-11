@@ -63,7 +63,7 @@ with Bar('Making KDEs', max=barmax,fill='#') as bar:
 		bw=Sbw/bw_divider
 
 		A = fn.KDE(X1,Y1,bins,bw)
-		density, xxmin, xxmax, yymin, yymax = KDE_plot(A)
+		density, xxmin, xxmax, yymin, yymax = fn.KDE_plot(A)
 		#normalize and nan it
 		norm = fn.normalize(density)
 		#Norm = normalize(density)
