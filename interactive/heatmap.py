@@ -31,8 +31,8 @@ sorted_unique_dates=sorted(unique_dates)
 
 normframe=[]
 for i in range(0,len(sorted_unique_dates)):
-    t = pd.read_pickle(f'{get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
-    normframe.append(t['KDE'].tolist()[0])
+    temp = pd.read_pickle(f'{get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
+    normframe.append(temp['KDE'].tolist()[0])
 #---------------------------------------------------------------#
 # ColumnDataSource Setup
 source = ColumnDataSource(data=dict(image=[normframe[0]], x=df_max_min.xmin, y=df_max_min.ymin))
