@@ -11,6 +11,7 @@ data_path= f'{fn.get_base_dir()}/data/evictionslatlong.csv'
 #user controled parameters
 bins = 1000
 tolerance = 0.01   #for KDEs
+bw_divider = 1.5   #what to divide bandwidth by to show neighborhoods more clearly
 #################################################################
 #load data 
 df = pd.read_csv(data_path)
@@ -59,7 +60,7 @@ with Bar('Making KDEs', max=barmax,fill='#') as bar:
 		#kde
 		Sbw=(len(X1))**(-1./(2.+4.))
 
-		bw=Sbw/1.25
+		bw=Sbw/bw_divider
 
 		A = KDE(X1,Y1,bins,bw)
 		density, xxmin, xxmax, yymin, yymax = KDE_plot(A)
