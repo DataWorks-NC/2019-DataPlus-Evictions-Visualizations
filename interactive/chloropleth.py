@@ -59,7 +59,7 @@ s.visible = False
 # Widgets Setup
 year = Slider(title='', value=0, start=0, end=len(sorted_unique_dates)-1, step=1, callback_policy ='throttle', callback_throttle=500)
 year.show_value = False
-year2 = Slider(title='', value=df_date.data_year.min(), start=df_date.data_year.min(), end=2018, step=1, callback_policy ='throttle', callback_throttle=500)
+year2 = Slider(title='', value=2012, start=2012, end=2018, step=1, callback_policy ='throttle', callback_throttle=500)
 year2.visible = False
 paragraph = Paragraph(text='January 2012', width=200, height=8)
 paragraph.default_size = 500
