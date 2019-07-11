@@ -9,9 +9,8 @@ from progress.bar import Bar
 #data path
 data_path= f'{fn.get_base_dir()}/data/evictionslatlong.csv'
 #user controled parameters
-bins = 250
+bins = 1000
 tolerance = 0.01   #for KDEs
-tolerance2 = 0.25  #for KDE differences 
 #################################################################
 #load data 
 df = pd.read_csv(data_path)
@@ -48,72 +47,33 @@ initial.to_pickle(f'{fn.get_base_dir()}/pickled_files/initial.pkl')
 df.to_pickle(f'{fn.get_base_dir()}/pickled_files/df.pkl')
 #---------------------------------------------------------------#
 #KDEs
-normframe=[]
-normframe_nans=[]
 barmax=len(sorted_unique_dates)*bins*bins
 with Bar('Making KDEs', max=barmax,fill='#') as bar:
 	for i in range(0,len(sorted_unique_dates)):
-    	#select
-		df_selection=df[df['date']==sorted_unique_dates[i]]
+		#select
+		d=sorted_unique_dates[i]
+		df_selection=df[df['date']==d]
 		#get x,y
 		X1=df_selection['x'].tolist()
 		Y1=df_selection['y'].tolist()
 		#kde
-		A = fn.KDE(X1, Y1, bins, xmin, xmax, ymin, ymax)
-		density, xxmin, xxmax, yymin, yymax = fn.KDE_plot(A)
+		Sbw=(len(X1))**(-1./(2.+4.))
+
+		bw=Sbw/1.25
+
+		A = KDE(X1,Y1,bins,bw)
+		density, xxmin, xxmax, yymin, yymax = KDE_plot(A)
 		#normalize and nan it
-		norm = fn.normalize(density)
-		Norm = fn.normalize(density)
+		norm = normalize(density)
+		#Norm = normalize(density)
 		for k in range(bins):
 			for j in range(bins):
 				if norm[k][j] < tolerance:
 					norm[k][j] = np.nan
 				bar.next()
-		norm=np.array(norm)
-		normframe_nans.append(norm)
-		Norm=np.array(Norm)
-		normframe.append(Norm) 
+
+		heat_map_df=pd.DataFrame({'date':d,'KDE':[norm]})
+		heat_map_df.to_pickle(f'{fn.get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
 #---------------------------------------------------------------#
-# create dataframe
-heat_map_df=pd.DataFrame({'date':sorted_unique_dates,'KDE':normframe_nans,'KDE_raw':normframe})
-heat_map_df.to_pickle(f'{fn.get_base_dir()}/pickled_files/KDE_df.pkl')
+print('time to run: ',datetime.now() - startTime)
 #---------------------------------------------------------------#
-# #producing KDE differences 
-# normframe_diff=[]
-# normframe_diff_nans=[]
-# date_ranges=[]
-# barmax1=(len(normframe)-1)*bins*bins
-# with Bar('KDE differences', max=barmax1,fill='#') as bar:
-# 	for i in range(0,len(normframe)-1):
-# 		delta_m=normframe[i+1]-normframe[i]
-
-# 		normed_delta=fn.normalize2(delta_m)
-# 		Normed_delta=fn.normalize2(delta_m)
-# 		normframe_diff.append(normed_delta)
-
-# 		date_ranges.append(str(sorted_unique_dates[i+1])+'-'+str(sorted_unique_dates[i]))
-
-# 		for i in range(bins):
-# 			for j in range(bins):
-# 				if abs(Normed_delta[i][j]) < tolerance2:
-# 					Normed_delta[i][j] = np.nan
-# 				bar.next()
-# 		normframe_diff_nans.append(Normed_delta)
-# heat_map_diff_df=pd.DataFrame({'date_range':date_ranges,'KDE_diffs':normframe_diff_nans,'KDE_diffs_raw':normframe_diff})
-# heat_map_diff_df.to_pickle('/pickled_files/KDE_diffs_df.pkl')
-# #---------------------------------------------------------------#
-# #total durham changes
-# total_diffs=sum(normframe_diff)
-# total_diffs=fn.normalize(total_diffs)
-# total_diffs_nans=total_diffs
-# barmax2=bins*bins
-# with Bar('Diffs', max=barmax2,fill='#') as bar:
-# 	for i in range(bins):
-# 		for j in range(bins):
-# 			if abs(total_diffs_nans[i][j]) < tolerance:
-# 				total_diffs_nans[i][j] = np.nan
-# 			bar.next()	
-# normed_total_diffs = fn.normalize2(total_diffs)
-# total_diff_df=pd.DataFrame({'type':['total_diff'],'KDE_tdiff':[total_diffs_nans],'KDE_tdiff_raw':[total_diffs]})
-# total_diff_df.to_pickle('/pickled_files/KDE_sum_diffs_df.pkl')
-# #---------------------------------------------------------------#
