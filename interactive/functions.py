@@ -33,17 +33,15 @@ def convX(input):
     r = 6378137.0
     return math.radians(input) * r 
 
-def KDE(x,y,bins,xmin,xmax,ymin,ymax):
+def KDE(x,y,bins,xmin,xmax,ymin,ymax,bw):
     nbins=bins
-    #creat grid
-    X, Y = np.mgrid[xmin:xmax:bins*1j, ymin:ymax:bins*1j]
-    positions = np.vstack([X.ravel(), Y.ravel()])
-    values = np.vstack([x,y])
-    #compute density
-    kernel = stats.gaussian_kde(values)
-    Z = np.reshape(kernel(positions).T, X.shape)
-    Z = np.transpose(Z)
-    return [X,Y,Z]
+    data=[x,y]
+    kde = stats.gaussian_kde(data)
+    kde.set_bandwidth(bw_method=bw)
+    xx, yy = np.mgrid[xmin:xmax:nbins*1j, ymin:ymax:nbins*1j]
+    density = kde(np.c_[xx.flat, yy.flat].T).reshape(xx.shape)
+    density=np.transpose(density)
+    return [xx,yy,density]
 
 def KDE_plot(kde_data):
     #make layout
