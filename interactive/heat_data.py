@@ -1,5 +1,7 @@
 #creating KDE data frame
 #imports
+from datetime import datetime
+startTime = datetime.now() 
 import functions as fn
 import numpy as np
 import pandas as pd
@@ -47,34 +49,45 @@ initial=df[df['date']==sorted_unique_dates[0]]
 initial.to_pickle(f'{fn.get_base_dir()}/pickled_files/initial.pkl')
 df.to_pickle(f'{fn.get_base_dir()}/pickled_files/df.pkl')
 #---------------------------------------------------------------#
+print('--------------------------------------------------------------------------------')
+print('Date Formatting: YEAR.[(MONTH)/100]. For example, July 2019 would be enterted as 2019.07')
+print('             ')
+print('Enter the minimum date for which the KDE algorithm needs to be run (inclusive).')
+min_year = float(input('Enter date: '))
+print('--------------------------------------------------------------------------------')
+#---------------------------------------------------------------#
 #KDEs
-barmax=len(sorted_unique_dates)*bins*bins
+barmax=len([i for i in sorted_unique_dates if i >= min_year])*bins*bins
 with Bar('Making KDEs', max=barmax,fill='#') as bar:
 	for i in range(0,len(sorted_unique_dates)):
-		#select
-		d=sorted_unique_dates[i]
-		df_selection=df[df['date']==d]
-		#get x,y
-		X1=df_selection['x'].tolist()
-		Y1=df_selection['y'].tolist()
-		#kde
-		Sbw=(len(X1))**(-1./(2.+4.))
+		if sorted_unique_dates[i] >= min_year:
 
-		bw=Sbw/bw_divider
+			#select
+			d=sorted_unique_dates[i]
+			df_selection=df[df['date']==d]
+			#get x,y
+			X1=df_selection['x'].tolist()
+			Y1=df_selection['y'].tolist()
+			#kde
+			Sbw=(len(X1))**(-1./(2.+4.))
+			bw=Sbw/bw_divider
 
-		A = fn.KDE(X1,Y1,bins,bw)
-		density, xxmin, xxmax, yymin, yymax = fn.KDE_plot(A)
-		#normalize and nan it
-		norm = fn.normalize(density)
-		#Norm = normalize(density)
-		for k in range(bins):
-			for j in range(bins):
-				if norm[k][j] < tolerance:
-					norm[k][j] = np.nan
-				bar.next()
+			A = fn.KDE(X1,Y1,bins,xmin,xmax,ymin,ymax,bw)
+			density, xxmin, xxmax, yymin, yymax = fn.KDE_plot(A)
+			#normalize and nan it
+			norm = fn.normalize(density)
 
-		heat_map_df=pd.DataFrame({'date':d,'KDE':[norm]})
-		heat_map_df.to_pickle(f'{fn.get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
+			for k in range(bins):
+				for j in range(bins):
+					if norm[k][j] < tolerance:
+						norm[k][j] = np.nan
+					bar.next()
+
+			heat_map_df=pd.DataFrame({'date':d,'KDE':[norm]})
+			heat_map_df.to_pickle(f'{fn.get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
+
+		else:
+			pass
 #---------------------------------------------------------------#
 print('time to run: ',datetime.now() - startTime)
 #---------------------------------------------------------------#
