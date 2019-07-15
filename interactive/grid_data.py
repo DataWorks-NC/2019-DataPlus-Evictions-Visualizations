@@ -5,10 +5,9 @@ import numpy as np
 import pandas as pd
 import functions as fn
 import datetime as dt
-from functions import get_base_dir
 #################################################################
 # Load Data
-df = pd.read_csv(f'{get_base_dir()}/data/dataworksnc_housing_evictions.csv')
+df = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_evictions.csv')
 #---------------------------------------------------------------#
 # Filter, Select, and Clean Dataset
 k = 'Summary Ejectment'
@@ -69,7 +68,7 @@ df.Year = df.Year.astype(str)
 df.Month = df.Month.astype(str)
 #---------------------------------------------------------------#
 # Output Pickle
-df.to_pickle(f'{get_base_dir()}/pickled_files/df_calendar.pkl')
+df.to_pickle(f'{fn.get_base_dir()}/pickled_files/df_calendar.pkl')
 np.save(os.path.join('npy', 'years'), years)
 np.save(os.path.join('npy', 'months'), months)
 #---------------------------------------------------------------#
