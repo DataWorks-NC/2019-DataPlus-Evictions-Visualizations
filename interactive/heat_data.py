@@ -12,7 +12,7 @@ from progress.bar import Bar
 data_path= f'{fn.get_base_dir()}/data/evictionslatlong.csv'
 #user controled parameters
 bins = 1000
-tolerance = 0.01   #for KDEs
+tolerance = 0.01   #filter noise in KDEs
 bw_divider = 1.5   #what to divide bandwidth by to show neighborhoods more clearly
 #---------------------------------------------------------------#
 #load data 
