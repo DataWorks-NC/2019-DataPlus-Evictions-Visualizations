@@ -2,6 +2,7 @@
 #import
 import numpy as np
 import pandas as pd
+import functions as fn
 from math import pi
 from bokeh.io import show
 from bokeh.models import LinearColorMapper, BasicTicker, ColorBar
@@ -11,14 +12,12 @@ from bokeh.palettes import brewer
 from bokeh.layouts import column
 #################################################################
 # Load Pickles Dataframes
-df = pd.read_pickle('./pickled_files/df_calendar.pkl')
-years = np.load('./npy/years.npy')
-months = np.load('./npy/months.npy')
+df = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/df_calendar.pkl')
+years = np.load(f'{fn.get_base_dir()}/npy/years.npy')
+months = np.load(f'{fn.get_base_dir()}/npy/months.npy')
 #---------------------------------------------------------------#
 # Palette Setup
-#palette = ['#084594', '#2171b5', '#4292c6', '#6baed6', '#9ecae1', '#c6dbef', '#deebf7', '#f7fbff']
 palette = ['#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b']
-#palette = palette[::-1]
 mapper = LinearColorMapper(palette=palette, low=df.normalize.min(), high=df.normalize.max())
 color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="10pt",
                      ticker=BasicTicker(desired_num_ticks=len(palette)),
