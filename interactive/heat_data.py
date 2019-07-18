@@ -28,7 +28,8 @@ Y=np.array(df['y'].tolist())
 #unique dates to analyze
 dates=df['date'].tolist()
 unique_dates=list(set(dates))
-sorted_unique_dates=sorted(unique_dates)
+missings=[2003.01,2003.02,2003.03,2003.04,2003.05,2003.07]
+sorted_unique_dates=sorted(unique_dates + missings)
 df_dates = pd.DataFrame({'sorted_unique_dates': sorted_unique_dates})
 #starting date in dataset
 df['xneg']=df['x'].apply(fn.reflect)
@@ -57,30 +58,41 @@ barmax=len([i for i in sorted_unique_dates if i >= min_year])*bins*bins
 with Bar('Making KDEs', max=barmax,fill='#') as bar:
 	for i in range(0,len(sorted_unique_dates)):
 		if sorted_unique_dates[i] >= min_year:
-
 			#select
 			d=sorted_unique_dates[i]
 			df_selection=df[df['date']==d]
 			#get x,y
 			X1=df_selection['x'].tolist()
 			Y1=df_selection['y'].tolist()
-			#kde
-			Sbw=(len(X1))**(-1./(2.+4.))
-			bw=Sbw/bw_divider
 
-			A = fn.KDE(X1,Y1,bins,min(X),max(X),min(Y),max(Y),bw)
-			density, xxmin, xxmax, yymin, yymax = fn.KDE_plot(A)
-			#normalize and nan it
-			norm = fn.normalize(density)
+			if len(X1) <= 2:
+				norm = np.zeros((bins,bins))
+				for k in range(bins):
+					for j in range(bins):
+						norm[k][j]==0
+						if norm[k][j] < tolerance:
+							norm[k][j] = np.nan
+						bar.next()
 
-			for k in range(bins):
-				for j in range(bins):
-					if norm[k][j] < tolerance:
-						norm[k][j] = np.nan
-					bar.next()
+				heat_map_df=pd.DataFrame({'date':d,'KDE':[norm]})
+				heat_map_df.to_pickle('/Users/EllisA/Desktop/jar/KDE_'+str(i)+'.pkl')
+			else:
+				#kde
+				Sbw=(len(X1))**(-1./(2.+4.))
+				bw=Sbw/1.15
+				A = KDE(X1,Y1,bins,bw)
+				density, xxmin, xxmax, yymin, yymax = KDE_plot(A)
+				#normalize and nan it
+				norm = normalize(density)
+				#Norm = normalize(density)
+				for k in range(bins):
+					for j in range(bins):
+						if norm[k][j] < tolerance:
+							norm[k][j] = np.nan
+						bar.next()
 
-			heat_map_df=pd.DataFrame({'date':d,'KDE':[norm]})
-			heat_map_df.to_pickle(f'{fn.get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')
+				heat_map_df=pd.DataFrame({'date':d,'KDE':[norm]})
+				heat_map_df.to_pickle('/Users/EllisA/Desktop/jar/KDE_'+str(i)+'.pkl')
 
 		else:
 			pass
