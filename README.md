@@ -49,7 +49,7 @@ Terminal:
 
 # Code Architecture 
 The general code structure, interactions, and dependencies. 
-![code](https://raw.githubusercontent.com/DataWorks-NC/evictions/master/code_structure.jpg?token=AJPOEXRC437BGSIY7C5LUIC5GCFPU)
+![code](https://imgur.com/a/qlatOLE)
 
 # Credits
 Data+ Team: Rodrigo Araujo, Ellis Ackerman, Samantha Miezio
