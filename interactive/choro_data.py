@@ -6,11 +6,34 @@ import geopandas as gpd
 #################################################################
 # Load Data
 k = 'Summary Ejectment'
-df_tract_m = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_tract_months.csv')
-df_tract_y = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__tract__year.csv')
-df_blockg_m = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_blockgroup_months.csv')
-df_blockg_y = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__blockgroup__year.csv')
-df_date = pd.read_csv(f'{fn.get_base_dir()}/data/evictionslatlong.csv')
+df_tract_m1 = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_tract_months.csv')
+df_tract_m2 = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_tract_months_2000_2011.csv')
+df_tract_m2.tract = df_tract_m2.tract.replace(1.0, 9801.0)
+df_tract_m2['status_date'] = df_tract_m2['status_date'].apply(fn.datestrconv)
+df_tract_m = pd.concat([df_tract_m1,df_tract_m2], sort=False)
+df_tract_m = df_tract_m.fillna(0)
+df_tract_m = df_tract_m.sort_values(by=['year'])
+
+df_tract_y1 = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__tract__year.csv')
+df_tract_y2 = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__tract__year_2000_2011.csv')
+df_tract_y = df_tract_y2.merge(df_tract_y1, right_on='fips', left_on='fips', how='outer')
+
+df_blockg_m1 = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_blockgroup_months.csv')
+df_blockg_m2 = pd.read_csv(f'{fn.get_base_dir()}/data/evictions_blockgroup_months_2000_2011.csv')
+df_blockg_m2['status_date'] = df_blockg_m2['status_date'].apply(fn.datestrconv)
+df_blockg_m = pd.concat([df_blockg_m1,df_blockg_m2], sort=False)
+df_blockg_m = df_blockg_m.fillna(0)
+df_blockg_m = df_blockg_m.sort_values(by=['year'])
+
+df_blockg_y1 = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__blockgroup__year.csv')
+df_blockg_y2 = pd.read_csv(f'{fn.get_base_dir()}/data/dataworksnc_housing_summary_ejectments__blockgroup__year_2000_2011.csv')
+df_blockg_y = df_blockg_y2.merge(df_blockg_y1, right_on='fips', left_on='fips', how='outer')
+
+df_date1 = pd.read_csv(f'{fn.get_base_dir()}/data/evictionslatlong.csv')
+df_date2 = pd.read_csv(f'{fn.get_base_dir()}/data/evictionslatlong_2000_2011.csv')
+df_date2['status_date'] = df_date2['status_date'].apply(fn.datestrconv)
+df_date = pd.concat([df_date1,df_date2])
+
 gdf_tract = gpd.read_file(f'{fn.get_base_dir()}/data/durham_tracts/durhamtracts.shp')
 gdf_blockg = gpd.read_file(f'{fn.get_base_dir()}/data/durham_blockgroups/durhamblockgroups.shp')
 #---------------------------------------------------------------#
