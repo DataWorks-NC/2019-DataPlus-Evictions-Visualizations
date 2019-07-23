@@ -1,6 +1,7 @@
 #reading pickles and plotting results
 #import
 import functions as fn
+import numpy as np
 import pandas as pd
 import geopandas as gpd
 from bokeh.io import curdoc
@@ -12,19 +13,22 @@ from bokeh.palettes import brewer
 from bokeh.tile_providers import get_provider, Vendors, CARTODBPOSITRON
 #################################################################
 # Load Pickles Dataframes
-
 mdf1 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf1.pkl')
 mdf2 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf2.pkl')
 mdf3 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf3.pkl')
 mdf4 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf4.pkl')
-initial = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/initial2.pkl')
-df_date = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/df_date.pkl')
-df_sorted = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/sorted2.pkl')
+
+df_sorted = pd.read_pickle('./pickled_files/sorted2.pkl')
 sorted_unique_dates = df_sorted.sorted_unique_dates.tolist()
+missing = [2003.01, 2003.02, 2003.03, 2003.04, 2003.05, 2003.07]
+sorted_unique_dates = sorted(sorted_unique_dates + missing)
+
+years = np.load(f'{fn.get_base_dir()}/npy/years.npy')
+months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+lower_case = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 #---------------------------------------------------------------#
 # ColumnDataSource Setup
-source = ColumnDataSource(data=dict(xs=list(mdf1['xs']), ys=list(mdf1['ys']), evics=list(mdf1.jan_2012), fips=list(mdf1.fips), tract=list(mdf1.tract), blockgroup=list(mdf1.tract)))
-pointsource = ColumnDataSource(data=dict(xs=list(initial['XX']), ys=list(initial['YY'])))
+source = ColumnDataSource(data=dict(xs=list(mdf1['xs']), ys=list(mdf1['ys']), evics=list(mdf1.jan_2000), fips=list(mdf1.fips), tract=list(mdf1.tract), blockgroup=list(mdf1.tract)))
 #---------------------------------------------------------------#
 # Palette Setup
 palette = brewer['YlGnBu'][8]
@@ -53,33 +57,19 @@ p.toolbar.active_scroll = wheel_zoom
 # Glyphs
 r = p.patches('xs', 'ys', source=source, fill_color={'field': 'evics', 'transform': color_mapper},
               line_width=0.3, line_color='black', fill_alpha=0.6)
-s = p.circle(x='xs', y='ys', source=pointsource, size=1, fill_color='black', line_color='black', fill_alpha=0)
-s.visible = False
 #---------------------------------------------------------------#
 # Widgets Setup
-year = Slider(title='', value=0, start=0, end=len(sorted_unique_dates)-1, step=1, callback_policy ='throttle', callback_throttle=500)
+year = Slider(title='', value=0, start=0, end=len(sorted_unique_dates)-2, step=1, callback_policy ='throttle', callback_throttle=500)
 year.show_value = False
-year2 = Slider(title='', value=df_date.data_year.min(), start=df_date.data_year.min(), end=2018, step=1, callback_policy ='throttle', callback_throttle=500)
+year2 = Slider(title='', value=2000, start=2000, end=2018, step=1, callback_policy ='throttle', callback_throttle=500)
 year2.visible = False
-paragraph = Paragraph(text='January 2012', width=200, height=8)
+paragraph = Paragraph(text='January 2000', width=200, height=8)
 paragraph.default_size = 500
 opacity = Slider(title='Opacity', value=0.6, start=0, end=1.0, step=0.1)
-checkbox = CheckboxGroup(labels=['Eviction Points'], active=[])
 select_census = Select(title='Census Display:', value='Census Tracts', options=['Census Tracts', 'Census BlockGroups'])
 select_time = Select(title='Timeframe:', value='Months', options=['Months', 'Years'])
 #---------------------------------------------------------------#
 # Set Up Callbacks
-lower_case = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
-months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-years = ['2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019']
-combine = []
-year_slider = []
-
-for i in range(len(years)):
-    for j in range(len(months)):
-        combine.append(months[j] + ' ' + years[i])
-        year_slider.append(lower_case[j] + '_' + years[i])
-
 def update_data(attrname, old, new):
     # Get the current slider values
     if select_census.value == 'Census Tracts' and select_time.value == 'Months':
@@ -92,12 +82,10 @@ def update_data(attrname, old, new):
         year.visible = True
         index = year.value
         title = """{input}"""
-        input = title.format(input=combine[index])
+        input = title.format(input=months[index % 12] + " " + years[index // 12])
         # Generate the new dataset
-        new_data = df_date[df_date['date'] == sorted_unique_dates[index]]
-        update_evics = list(mdf1[year_slider[index]])
+        update_evics = list(mdf1[lower_case[index % 12] + "_" + years[index // 12]])
         # Inject new dataset
-        pointsource.data = dict(xs=list(new_data['XX']), ys=list(new_data['YY']))
         source.data = dict(xs=list(mdf1['xs']), ys=list(mdf1['ys']), evics=update_evics, fips=mdf1.fips, tract=list(mdf1.tract), blockgroup=list(mdf1.tract))
         paragraph.text = input
         hover.tooltips = [('Tract', '@tract'), ('# of evictions', '@evics')]
@@ -115,17 +103,15 @@ def update_data(attrname, old, new):
         index = year2.value
         input = 'y_' + str(index)
         # Generate the new dataset
-        new_data = df_date.query('data_year == @index')
         update_evics = list(mdf2[input])
         # Inject new dataset
-        pointsource.data = dict(xs=list(new_data['XX']), ys=list(new_data['YY']))
         source.data = dict(xs=list(mdf2['xs']), ys=list(mdf2['ys']), evics=update_evics, fips=mdf2.fips, tract=list(mdf2.tract), blockgroup=list(mdf2.tract))
         hover.tooltips = [('Tract', '@tract'), ('# of evictions', '@evics')]
 
     if select_census.value == 'Census BlockGroups' and select_time.value == 'Months':
         #Set Map Properties
         p.title.text = 'BlockGroup Evictions, Durham'
-        color_mapper = LinearColorMapper(palette=palette, low=0, high=100)
+        color_mapper = LinearColorMapper(palette=palette, low=0, high=75)
         color_bar.color_mapper = color_mapper
         r.glyph.fill_color = {'field': 'evics', 'transform': color_mapper}
         #Transition Sliders
@@ -134,12 +120,10 @@ def update_data(attrname, old, new):
         year.visible = True
         index = year.value
         title = '''{input}'''
-        input = title.format(input=combine[index])
+        input = title.format(input=months[index % 12] + " " + years[index // 12])
         # Generate the new dataset
-        new_data = df_date[df_date['date'] == sorted_unique_dates[index]]
-        update_evics = list(mdf3[year_slider[index]])
+        update_evics = list(mdf3[lower_case[index % 12] + "_" + years[index // 12]])
         # Inject new dataset
-        pointsource.data = dict(xs=list(new_data['XX']), ys=list(new_data['YY']))
         source.data = dict(xs=list(mdf3['xs']), ys=list(mdf3['ys']), evics=update_evics, fips=list(mdf3.fips), tract=list(mdf3.tract), blockgroup=list(mdf3.blockgroup))
         paragraph.text = input
         hover.tooltips = [('Tract', '@tract'), ('BlockGroup', '@blockgroup'), ('# of evictions', '@evics')]
@@ -156,10 +140,8 @@ def update_data(attrname, old, new):
         index = year2.value
         input = 'y_' + str(index)
         # Generate the new dataset
-        new_data = df_date.query('data_year == @index')
         update_evics = list(mdf4[input])
         # Inject new dataset
-        pointsource.data = dict(xs=list(new_data['XX']), ys=list(new_data['YY']))
         source.data = dict(xs=list(mdf4['xs']), ys=list(mdf4['ys']), evics=update_evics, fips=list(mdf4.fips), tract=list(mdf4.tract), blockgroup=list(mdf4.blockgroup))
         hover.tooltips = [('Tract', '@tract'), ('BlockGroup', '@blockgroup'), ('# of evictions', '@evics')]
 
@@ -171,23 +153,11 @@ paragraph.on_change('text', update_data)
 def update_opacity(attrname, old, new):
 
   r.glyph.fill_alpha = opacity.value
+
 opacity.on_change('value', update_opacity)
-
-def update_checkbox(attrname, old, new):
-    if checkbox.active.__contains__(0):
-        s.visible = True
-    if not(checkbox.active.__contains__(0)):
-        s.visible = False
-checkbox.on_change('active', update_checkbox)
-
-# def update_select_census(attrname, old, new):
-
 select_census.on_change('value', update_data)
-
-# def update_select_time(attrname, old, new):
-
 select_time.on_change('value', update_data)
 #---------------------------------------------------------------#
 # Create Layout
-layout = row(column(select_census, select_time, paragraph, widgetbox(year), widgetbox(year2), widgetbox(opacity), checkbox), p, width=800)
+layout = row(column(select_census, select_time, paragraph, widgetbox(year), widgetbox(year2), widgetbox(opacity)), p, width=800)
 
