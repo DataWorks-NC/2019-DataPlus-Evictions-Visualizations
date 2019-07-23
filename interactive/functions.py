@@ -65,6 +65,9 @@ def normalize2(data):
     b=np.interp(data, (data.min(), data.max()), (-1,1))
     return 
 
+def normalize3(input, data):
+    return ((input - min(data)) / (max(data) - min(data)))
+
 def getPolyCoords(row, coord_type, geom="geometry"):
     exterior = row[geom].exterior
     if coord_type == "x":
@@ -115,4 +118,10 @@ def load_data(schema, table):
 def get_base_dir():
     return os.path.dirname(__file__)
 
+def datetimeconv(input):
+    return datetime.strptime(input, '%Y-%m-%d')
+
+def datestrconv(input):
+    strarray = input.split('/')
+    return strarray[2] + '-' + strarray[0] + '-' + strarray[1]
               
