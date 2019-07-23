@@ -49,7 +49,7 @@ Terminal:
 
 # Code Architecture 
 The general code structure, interactions, and dependencies. 
-![code](https://i.imgur.com/sIm1PNX.jpg)
+![code](https://imgur.com/a/hAM3sYr)
 
 # Credits
 Data+ Team: Rodrigo Araujo, Ellis Ackerman, Samantha Miezio
