@@ -49,6 +49,7 @@ Terminal:
 
 # Code Architecture 
 The general code structure, interactions, and dependencies. 
+The gray section is backend data wrangling that will need to occur as new data is acquired. The blue section of the code is executed when the web application is run. 
 ![code](https://i.imgur.com/7qUM8K5.png)
 
 # Credits
