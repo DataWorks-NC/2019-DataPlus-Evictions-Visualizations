@@ -21,9 +21,6 @@ sorted_unique_dates = df_dates.sorted_unique_dates.tolist()
 years = np.load(f'{fn.get_base_dir()}/npy/years.npy')
 months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
-missing = [2003.01, 2003.02, 2003.03, 2003.04, 2003.05, 2003.07]
-sorted_unique_dates = sorted(sorted_unique_dates + missing)
-
 normframe=[]
 for i in range(0,len(glob.glob1(f'{fn.get_base_dir()}/pickled_files/jar', '*.pkl'))):
   df_new = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/jar/KDE_' + str(i) + '.pkl')

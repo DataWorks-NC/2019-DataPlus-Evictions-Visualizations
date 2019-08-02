@@ -89,20 +89,7 @@ mdf2 = gdf_t.merge(tract_year, right_on='fips', left_on='fips', how='outer')
 mdf3 = gdf_bg.merge(blockg_month, right_on='fips', left_on='fips', how='outer')
 mdf4 = gdf_bg.merge(blockg_year, right_on='fips', left_on='fips', how='outer')
 #---------------------------------------------------------------#
-# Grab Individual Eviction Points
-df_date['date'] = df_date['status_date'].apply(fn.time)
-df_date['XX'] = df_date['x'].apply(fn.convX)
-df_date['YY'] = df_date['y'].apply(fn.convY)
-dates = df_date['date'].tolist()
-unique_dates = list(set(dates))
-sorted_unique_dates = sorted(unique_dates)
-initial = df_date[df_date['date'] == sorted_unique_dates[0]]
-df_dates = pd.DataFrame({'sorted_unique_dates': sorted_unique_dates})
-#---------------------------------------------------------------#
 # Output Pickle
-df_date.to_pickle(f'{fn.get_base_dir()}/pickled_files/df_date.pkl')
-df_dates.to_pickle(f'{fn.get_base_dir()}/pickled_files/sorted2.pkl')
-initial.to_pickle(f'{fn.get_base_dir()}/pickled_files/initial2.pkl')
 mdf1.to_pickle(f'{fn.get_base_dir()}/pickled_files/mdf1.pkl')
 mdf2.to_pickle(f'{fn.get_base_dir()}/pickled_files/mdf2.pkl')
 mdf3.to_pickle(f'{fn.get_base_dir()}/pickled_files/mdf3.pkl')
