@@ -18,10 +18,8 @@ mdf2 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf2.pkl')
 mdf3 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf3.pkl')
 mdf4 = pd.read_pickle(f'{fn.get_base_dir()}/pickled_files/mdf4.pkl')
 
-df_sorted = pd.read_pickle('./pickled_files/sorted2.pkl')
+df_sorted = pd.read_pickle('./pickled_files/sorted.pkl')
 sorted_unique_dates = df_sorted.sorted_unique_dates.tolist()
-missing = [2003.01, 2003.02, 2003.03, 2003.04, 2003.05, 2003.07]
-sorted_unique_dates = sorted(sorted_unique_dates + missing)
 
 years = np.load(f'{fn.get_base_dir()}/npy/years.npy')
 months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
