@@ -13,8 +13,8 @@ import _functions as fn
 name=input('Username: ')
 pssword=input('Password: ')
 #---------------------------------------------------------------#
-PGHOST='dataworksnc.cvjygj6lx0j8.us-east-1.rds.amazonaws.com'
-PGDATABASE='dataworksnc'
+PGHOST=input('Host: ')
+PGDATABASE=input('Database: ')
 PGUSER=name
 PGPASSWORD=pssword
 #---------------------------------------------------------------#
