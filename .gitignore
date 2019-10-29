@@ -115,5 +115,10 @@ gen
 Supprimerait .gitignore
 
 # HTML files
-/html
-*.html
+html/*.html
+
+# Pkl files
+interactive/pickled_files/
+
+# Data files
+interactive/data/*.csv
