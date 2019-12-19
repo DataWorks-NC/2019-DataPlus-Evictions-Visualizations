@@ -394,6 +394,53 @@ SELECT
        h.status_date as date,
        h.process
     FROM housing.evictions__blockgroup h) as src"""
+ebm_2018oct_2019oct = """select
+    g.fips,
+    g.tract,
+    g.blockgroup, 
+    SUM(g.Oct_2018) as Oct_2018, 
+    SUM(g.Nov_2018) as Nov_2018,
+    SUM(g.Dec_2018) as Dec_2018,
+    SUM(g.Jan_2019) as Jan_2019,
+    SUM(g.Feb_2019) as Feb_2019,
+    SUM(g.Mar_2019) as Mar_2019,
+    SUM(g.Apr_2019) as Apr_2019,
+    SUM(g.May_2019) as May_2019,
+    SUM(g.Jun_2019) as Jun_2019,
+    SUM(g.Jul_2019) as Jul_2019,
+    SUM(g.Aug_2019) as Aug_2019,
+    SUM(g.Sep_2019) as Sep_2019,
+    SUM(g.Oct_2019) as Oct_2019 
+FROM(
+    SELECT
+        src.fips,
+        mod(cast(src.fips as bigint),10) as blockgroup,
+        (mod(cast(floor(cast(src.fips as bigint) / 10) as bigint), 10000) * 1.0) / 100 as tract,
+        case when src.data_year = 2018 and src.status_date = 10 then 1 else 0 end as Oct_2018,
+        case when src.data_year = 2018 and src.status_date = 11 then 1 else 0 end as Nov_2018,
+        case when src.data_year = 2018 and src.status_date = 12 then 1 else 0 end as Dec_2018,
+        case when src.data_year = 2019 and src.status_date = 1 then 1 else 0 end as Jan_2019,
+        case when src.data_year = 2019 and src.status_date = 2 then 1 else 0 end as Feb_2019,
+        case when src.data_year = 2019 and src.status_date = 3 then 1 else 0 end as Mar_2019,
+        case when src.data_year = 2019 and src.status_date = 4 then 1 else 0 end as Apr_2019,
+        case when src.data_year = 2019 and src.status_date = 5 then 1 else 0 end as May_2019,
+        case when src.data_year = 2019 and src.status_date = 6 then 1 else 0 end as Jun_2019,
+        case when src.data_year = 2019 and src.status_date = 7 then 1 else 0 end as Jul_2019,
+        case when src.data_year = 2019 and src.status_date = 8 then 1 else 0 end as Aug_2019,
+        case when src.data_year = 2019 and src.status_date = 9 then 1 else 0 end as Sep_2019,
+        case when src.data_year = 2019 and src.status_date = 10 then 1 else 0 end as Oct_2019
+    FROM(
+        SELECT
+           CAST(fips as NUMERIC) as fips,
+           data_year,
+           cast(substring(cast(status_date as varchar(10)), 6, 2) as int) as status_date,
+           status_date as date
+        FROM housing.evictions__blockgroup
+        WHERE (process = 'Summary Ejectment')
+        ) as src 
+    ) as g
+GROUP BY (g.fips, g.tract, g.blockgroup)
+ORDER BY g.fips"""
 ebm_2000_2011 = """select
     src.docket_num,
     src.fips,
