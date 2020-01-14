@@ -9,7 +9,7 @@ The Data+ Durham evictions team is tasked with creating visualizations to furthe
 
 Over the course of a ten-week period, the Durham Evictions team at Data+, alongside the oversight of Dataworks, will begin to answer these questions while providing meaningful visualizations that can be used to further research on eviction trends in Durham with the hopes of providing policymakers with the tools and evidence to argue for legislative changes. 
 
-# Tech/Framework Used
+## Tech/Framework Used
 [![py-3.7](https://img.shields.io/badge/Python-3.7-blue.svg)](https://www.python.org/downloads/)
 
 Packages:
@@ -22,16 +22,16 @@ Packages:
 [![psycopg2](https://img.shields.io/badge/Psycopg-2.8.3-green.svg)](https://pypi.org/project/psycopg2/)
 [![DateTime](https://img.shields.io/badge/DateTime-4.3-green.svg)](https://pypi.org/project/DateTime/) 
 
-# Features
+## Features
 1) Interactive chloropleth map
 2) Interactive heatmap
 3) Monthly categorical heatmap (individual years normalized for comparison)
 
-# Prerequisites
+## Prerequisites
 
 You need to have pipenv installed and configured correctly before getting started.
 
-# Installation
+## Installation
 1) Clone repo from git
 
 2) Change directory to repo location
@@ -42,7 +42,9 @@ pipenv install
 pipenv shell
 ```
 
-# How to Use?
+3) Create a `.env` file in the root of the repo which includes settings for the following database connection variables -- PGUSER, PGPASSWORD, PGHOST and PGDATABASE.
+
+## How to Use?
 Terminal:
 
 `bokeh serve interactive/`
@@ -52,7 +54,7 @@ The general code structure, interactions, and dependencies.
 The gray section is backend data wrangling that will need to occur as new data is acquired. The blue section of the code is executed when the web application is run. 
 ![code](https://i.imgur.com/7qUM8K5.png)
 
-# Credits
+## Credits
 Data+ Team: Rodrigo Araujo, Ellis Ackerman, Samantha Miezio
 
 DataWorks Team: John Killeen, L’Tanya Durante, Tim Stallmann
@@ -61,6 +63,6 @@ Project Manager: Libby McClure
 
 Legal Aid/Eviction Diversion Program: Peter Gilbert
 
-# License
+## License
 ![Data+Logo](https://bigdata.duke.edu/sites/bigdata.duke.edu/files/site-images/image002-2.jpg)
 
