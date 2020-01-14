@@ -1,11 +1,8 @@
-import sys, os
-from scipy import stats
 import numpy as np
 import pandas as pd
 import pandas.io.sql as sqlio
-import geopandas as gpd
-import pandas.io.sql as psql
 import psycopg2
+
 from bokeh.io import curdoc
 from bokeh.layouts import row, column, widgetbox
 from bokeh.models import ColumnDataSource, LinearColorMapper, LogColorMapper, LogTicker, ColorBar, HoverTool, \
@@ -14,8 +11,9 @@ from bokeh.models.widgets import Slider, Paragraph, CheckboxGroup, Select, Butto
 from bokeh.plotting import figure, output_file, save, show
 from bokeh.palettes import brewer
 from bokeh.tile_providers import get_provider, Vendors, CARTODBPOSITRON
-import queries as q
 
+import queries as q
+import settings
 
 #################################################################
 # Functions
@@ -45,15 +43,12 @@ def conv_poly_xs(row):
 
 
 # ---------------------------------------------------------------#
-# User input of credentials
-PGUSER = os.getenv('PGUSER')
-PGPASSWORD = os.getenv('PGPASS')
-PGHOST = os.getenv('PGHOST')
-PGDATABASE = os.getenv('PGDATABASE', 'dataworksnc')
-
-# ---------------------------------------------------------------#
 # Set up a connection to the postgres server.
-conn_string = 'host=' + PGHOST + ' port=' + '5432' + ' dbname=' + PGDATABASE + ' user=' + PGUSER + ' password=' + PGPASSWORD
+if settings.PGHOST == "" or settings.PGUSER == "":
+    print('No connection information found')
+    exit(1)
+
+conn_string = 'host=' + settings.PGHOST + ' port=' + '5432' + ' dbname=' + settings.PGDATABASE + ' user=' + settings.PGUSER + ' password=' + settings.PGPASSWORD
 conn = psycopg2.connect(conn_string)
 print('Connected to Server')
 # create a cursor object
@@ -90,15 +85,18 @@ gdf_bg['poly_x'] = gdf_bg.apply(getPolyCoords, coord_type='x', axis=1)  # grab x
 gdf_bg['poly_y'] = gdf_bg.apply(getPolyCoords, coord_type='y', axis=1)  # grab y coords
 gdf_bg['xs'] = gdf_bg.poly_x.map(conv_poly_xs)  # convert x coords to be usable by Bokeh
 gdf_bg['ys'] = gdf_bg.poly_y.map(conv_poly_ys)  # convert y coords to be usable by Bokeh
+
 # ---------------------------------------------------------------#
 # Merge Evictions Dataset with Shapefile
 mdf3 = gdf_bg.merge(df_blockg_m, right_on='fips', left_on='fips', how='outer')
 mdf3 = df_rental.merge(mdf3, right_on='fips', left_on='fips', how='outer')
+
 # ---------------------------------------------------------------#
 # ColumnDataSource Setup
 source = ColumnDataSource(
     data=dict(xs=list(mdf3['xs']), ys=list(mdf3['ys']), evics=list((mdf3.oct_2018 * 100) / mdf3.rental_units),
               fips=list(mdf3.fips), tract=list(mdf3.tract), blockgroup=list(mdf3.blockgroup)))
+
 # ---------------------------------------------------------------#
 # Palette Setup / ColorBar
 color_bar_height = 650 + 11
@@ -116,6 +114,7 @@ color_bar_plot = figure(title="Evictions per 100 Rental Units", title_location="
 color_bar_plot.add_layout(color_bar, 'right')
 color_bar_plot.title.align = "center"
 color_bar_plot.title.text_font_size = '12pt'
+
 # ---------------------------------------------------------------#
 # Figures
 hover = HoverTool(tooltips=[('Tract', '@tract'), ('BlockGroup', '@blockgroup'), ('# of evictions', '@evics')])
@@ -124,6 +123,7 @@ p = figure(plot_height=650, plot_width=700, title='BlockGroup Evictions, Durham'
            tools=[hover, wheel_zoom, 'pan', 'save', 'reset'],
            toolbar_location='above', x_range=(-8800000, -8775000), y_range=(4250000, 4350000),
            x_axis_type='mercator', y_axis_type='mercator')
+
 # ---------------------------------------------------------------#
 # Map Setup
 p.axis.visible = False
@@ -132,10 +132,12 @@ p.add_tile(CARTODBPOSITRON)
 p.grid.grid_line_color = None
 p.axis.visible = True
 p.toolbar.active_scroll = wheel_zoom
+
 # ---------------------------------------------------------------#
 # Glyphs
 r = p.patches('xs', 'ys', source=source, fill_color={'field': 'evics', 'transform': color_mapper},
               line_width=0.3, line_color='black', fill_alpha=1)
+
 # ---------------------------------------------------------------#
 # Widgets Setup
 year = Slider(title='', value=0, start=0, end=num_unique_months - 1, step=1, callback_policy='throttle',
@@ -175,7 +177,9 @@ def update_opacity():
 
 
 opacity.on_click(update_opacity)
+
 # ---------------------------------------------------------------#
 # Create Layout
 layout = column(row(p, color_bar_plot), paragraph, widgetbox(year), widgetbox(opacity), width=800)
+
 curdoc().add_root(layout)
