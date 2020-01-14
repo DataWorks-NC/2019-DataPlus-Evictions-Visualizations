@@ -280,6 +280,7 @@ SELECT
         FROM (staging.eviction_processes_2000_2011_bgclip h
          JOIN geom.tract g ON (st_contains(st_transform(g.geom, 102719), st_transform(h.geom, 102719))))
              ) t) as src"""
+
 ebm_2012_2019 = """select
     src.docket_num,
     src.fips,
@@ -394,6 +395,7 @@ SELECT
        h.status_date as date,
        h.process
     FROM housing.evictions__blockgroup h) as src"""
+
 ebm_2018oct_2019oct = """select
     g.fips,
     g.tract,
@@ -441,6 +443,19 @@ FROM(
     ) as g
 GROUP BY (g.fips, g.tract, g.blockgroup)
 ORDER BY g.fips"""
+
+evictions_by_month_by_blockgroup_2018_to_present = """SELECT 
+    year, 
+    month, 
+    fips, 
+    mod(cast(fips as bigint),10) as blockgroup,  
+    (mod(cast(floor(cast(fips as bigint) / 10) as bigint), 10000) * 1.0) / 100 as tract,
+    count(*) as evictions
+from (select date_part('year', status_date) as year, date_part('month', status_date) as month, fips
+      from housing.evictions__blockgroup
+      where status_date > date '2018-01-01') as e
+group by year, month, fips order by fips"""
+
 ebm_2000_2011 = """select
     src.docket_num,
     src.fips,

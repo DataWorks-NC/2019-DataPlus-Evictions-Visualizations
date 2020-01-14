@@ -1,5 +1,3 @@
-from datetime import date
-
 from bokeh.io import curdoc
 from bokeh.layouts import row, column, widgetbox
 from bokeh.models import ColumnDataSource, LinearColorMapper, LogColorMapper, LogTicker, ColorBar, HoverTool, \
@@ -9,23 +7,26 @@ from bokeh.plotting import figure, output_file, save, show
 from bokeh.palettes import brewer
 from bokeh.tile_providers import get_provider, Vendors
 
-# Import data from server_context
-server_context = curdoc().session_context.server_context
-mdf3 = server_context.mdf3
-
-source = ColumnDataSource(
-        data=dict(xs=list(mdf3['xs']), ys=list(mdf3['ys']), evics=list((mdf3.oct_2018 * 100) / mdf3.rental_units),
-                  fips=list(mdf3.fips), tract=list(mdf3.tract), blockgroup=list(mdf3.blockgroup)))
-
 # setup time range
+# TODO: PUll this from the range returned by DB query so it auto-updates.
 years = ['2018', '2019']
 months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
           'November',
           'December']
 lower_case = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 combine = [j + " " + i for i in years for j in months][9:-2]
-update = [lower_case[months.index(j)] + "_" + i for i in years for j in months][9:-2]
+update = [{'year': int(i), 'month': j + 1} for i in years for j in range(len(months))][9:-2]
 num_unique_months = len(combine)
+
+# Import data from server_context
+server_context = curdoc().session_context.server_context
+mdf3 = server_context.mdf3
+
+initial_filtered_evictions = mdf3[(mdf3['year'] == update[-1]['year']) & (mdf3['month'] == update[-1]['month'])]
+
+source = ColumnDataSource(
+        data=dict(xs=list(initial_filtered_evictions['xs']), ys=list(initial_filtered_evictions['ys']), evics=list((initial_filtered_evictions['evictions'] * 100) / initial_filtered_evictions['rental_units']),
+                  fips=list(initial_filtered_evictions.fips), tract=list(initial_filtered_evictions.tract), blockgroup=list(initial_filtered_evictions.blockgroup)))
 
 # ---------------------------------------------------------------#
 # Palette Setup / ColorBar
@@ -65,7 +66,7 @@ p.toolbar.active_scroll = wheel_zoom
 
 # ---------------------------------------------------------------#
 # Glyphs
-p.patches('xs', 'ys', source=source, fill_color={'field': 'evics', 'transform': color_mapper},
+r = p.patches('xs', 'ys', source=source, fill_color={'field': 'evics', 'transform': color_mapper},
               line_width=0.3, line_color='black', fill_alpha=1)
 
 # ---------------------------------------------------------------#
@@ -87,11 +88,14 @@ def update_data(attrname, old, new):
     index = year.value
     title = '''{input}'''
     input = title.format(input=combine[index])
+
+    # Pull just evictions data for this month/year.
+    filtered_evictions = mdf3[(mdf3['year'] == update[index]['year']) & (mdf3['month'] == update[index]['month'])]
     # Generate the new dataset
-    update_evics = list((mdf3[update[index]] * 100) / mdf3["rental_units"])
+    update_evics = list((filtered_evictions['evictions'] * 100) / filtered_evictions["rental_units"])
     # Inject new dataset
-    source.data = dict(xs=list(mdf3['xs']), ys=list(mdf3['ys']), evics=update_evics, fips=list(mdf3.fips),
-                       tract=list(mdf3.tract), blockgroup=list(mdf3.blockgroup))
+    source.data = dict(xs=list(filtered_evictions['xs']), ys=list(filtered_evictions['ys']), evics=update_evics, fips=list(filtered_evictions.fips),
+                       tract=list(filtered_evictions.tract), blockgroup=list(filtered_evictions.blockgroup))
     paragraph.text = input
 
 

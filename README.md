@@ -47,7 +47,7 @@ pipenv shell
 ## How to Use?
 Terminal:
 
-`bokeh serve interactive/`
+`bokeh serve evictions_map/`
 
 # Code Architecture 
 The general code structure, interactions, and dependencies. 

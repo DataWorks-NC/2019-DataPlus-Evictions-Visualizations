@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import pandas.io.sql as sqlio
 import psycopg2
-from bokeh.models import ColumnDataSource
 
 import settings
 import queries as q
@@ -16,18 +15,17 @@ def on_server_loaded(server_context):
         print('No connection information found')
         exit(1)
 
-    conn_string = 'host=' + settings.PGHOST + ' port=' + '5432' + ' dbname=' + settings.PGDATABASE + ' user=' + settings.PGUSER + ' password=' + settings.PGPASSWORD
+    conn_string = f'host={settings.PGHOST} port=5432 dbname={settings.PGDATABASE} user={settings.PGUSER} password={settings.PGPASSWORD}'
     conn = psycopg2.connect(conn_string)
     print('Connected to Server')
     # create a cursor object
     cursor = conn.cursor()
     # ---------------------------------------------------------------#
     # Load Data using SQL Queries
-    ebm_2018_2019 = q.ebm_2018oct_2019oct
     rental_units = """select CAST(geoid10 as NUMERIC) as fips, acs16_rent as rental_units, acs16_tota as total_units FROM staging.evictions_per_bg"""
     blockgroup = """select fips, st_astext((ST_Dump(geom)).geom) AS geom, area__sqmi FROM geom.blockgroup"""
     # read queries using database
-    df_blockg_m = sqlio.read_sql_query(ebm_2018_2019, conn)
+    df_blockg_m = sqlio.read_sql_query(q.evictions_by_month_by_blockgroup_2018_to_present, conn)
     df_rental = sqlio.read_sql_query(rental_units, conn)
     gdf_bg = sqlio.read_sql_query(blockgroup, conn)
 
