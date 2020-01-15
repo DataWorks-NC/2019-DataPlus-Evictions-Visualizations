@@ -72,4 +72,6 @@ def on_server_loaded(server_context):
     evictions_count.loc[~(evictions_count['evictions'] >= 0), 'evictions'] = 0  # Set all missing or non-numeric values to 0 for evictions count
     evictions_count['evictions_per_rental_unit'] = evictions_count['evictions'] * 100 / evictions_count['rental_units']
     evictions_count.loc[~(evictions_count['rental_units'] > 0), 'evictions_per_rental_unit'] = None
+    evictions_count['blockgroup'] = evictions_count['fips'].str[-1]
+    evictions_count['tract'] = evictions_count['fips'].map(lambda x: f'{int(x[5:9])}.{int(x[9:11])}')
     server_context.evictions_count = evictions_count

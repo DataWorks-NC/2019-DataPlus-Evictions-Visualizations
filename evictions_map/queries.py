@@ -448,8 +448,6 @@ evictions_by_month_by_blockgroup_2018_to_present = """SELECT
     year, 
     month, 
     fips, 
-    mod(cast(fips as bigint),10) as blockgroup,  
-    (mod(cast(floor(cast(fips as bigint) / 10) as bigint), 10000) * 1.0) / 100 as tract,
     count(*) as evictions
 from (select date_part('year', status_date) as year, date_part('month', status_date) as month, fips
       from housing.evictions__blockgroup

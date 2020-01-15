@@ -1,9 +1,9 @@
 from bokeh.io import curdoc
 from bokeh.layouts import row, column, widgetbox
-from bokeh.models import ColumnDataSource, LinearColorMapper, LogColorMapper, LogTicker, ColorBar, HoverTool, \
+from bokeh.models import ColumnDataSource, AdaptiveTicker, LogColorMapper, ColorBar, HoverTool, \
     WheelZoomTool
-from bokeh.models.widgets import Slider, DateSlider, Paragraph, CheckboxGroup, Select, Button
-from bokeh.plotting import figure, output_file, save, show
+from bokeh.models.widgets import Slider, Paragraph, Button
+from bokeh.plotting import figure
 from bokeh.palettes import brewer
 from bokeh.tile_providers import get_provider, Vendors
 
@@ -40,9 +40,9 @@ color_bar_height = 650 + 11
 color_bar_width = 120
 palette = brewer['YlGnBu'][8]
 palette = palette[::-1]
-color_mapper = LinearColorMapper(palette=palette, low=0, high=25)
-color_bar = ColorBar(color_mapper=color_mapper, label_standoff=8, width=20,
-                     height=500, border_line_color=None, location=(0, 75), orientation='vertical')
+color_mapper = LogColorMapper(palette=palette, low=0, high=evictions_count['evictions_per_rental_unit'].max())
+color_bar = ColorBar(color_mapper=color_mapper, ticker=AdaptiveTicker(base=10, mantissas=[1, 2, 5]), label_standoff=8, width=20,
+                     height=500, border_line_color=None, location=(0, 75))
 color_bar_plot = figure(title="Evictions per 100 Rental Units", title_location="right",
                         height=color_bar_height, width=color_bar_width,
                         toolbar_location=None, min_border=0,
