@@ -82,7 +82,7 @@ year = Slider(title='', value=num_unique_months - 1, start=0, end=num_unique_mon
                callback_throttle=500)
 
 year.show_value = False
-paragraph = Paragraph(text='October 2018', width=200, height=8)
+paragraph = Paragraph(text='October 2019', width=200, height=8) # TODO: This initial value also needs to update dynamically
 paragraph.default_size = 500
 opacity = Button(label='Full Opacity')
 
