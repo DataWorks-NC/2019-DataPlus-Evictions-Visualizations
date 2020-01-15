@@ -7,6 +7,11 @@ from bokeh.plotting import figure, output_file, save, show
 from bokeh.palettes import brewer
 from bokeh.tile_providers import get_provider, Vendors
 
+
+# Filters the evictions dataframe by year and month.
+def filter_evictions(evictions_dataset, year, month):
+    return evictions_dataset[(evictions_dataset['year'] == year) & (evictions_dataset['month'] == month)]
+
 # setup time range
 # TODO: PUll this from the range returned by DB query so it auto-updates.
 years = ['2018', '2019']
@@ -20,12 +25,13 @@ num_unique_months = len(combine)
 
 # Import data from server_context
 server_context = curdoc().session_context.server_context
-mdf3 = server_context.mdf3
+evictions_count = server_context.evictions_count
 
-initial_filtered_evictions = mdf3[(mdf3['year'] == update[-1]['year']) & (mdf3['month'] == update[-1]['month'])]
+# Pull latest data for initial display
+initial_filtered_evictions = filter_evictions(evictions_count, update[-1]['year'], update[-1]['month'])
 
 source = ColumnDataSource(
-        data=dict(xs=list(initial_filtered_evictions['xs']), ys=list(initial_filtered_evictions['ys']), evics=list((initial_filtered_evictions['evictions'] * 100) / initial_filtered_evictions['rental_units']),
+        data=dict(xs=list(initial_filtered_evictions['xs']), ys=list(initial_filtered_evictions['ys']), evics=list(initial_filtered_evictions['evictions_per_rental_unit']), evics_raw=list(initial_filtered_evictions['evictions']),
                   fips=list(initial_filtered_evictions.fips), tract=list(initial_filtered_evictions.tract), blockgroup=list(initial_filtered_evictions.blockgroup)))
 
 # ---------------------------------------------------------------#
@@ -48,7 +54,7 @@ color_bar_plot.title.text_font_size = '12pt'
 
 # ---------------------------------------------------------------#
 # Figures
-hover = HoverTool(tooltips=[('Tract', '@tract'), ('Block Group', '@blockgroup'), ('Evictions per 100 renters', '@evics')])
+hover = HoverTool(tooltips=[('Tract', '@tract'), ('Block Group', '@blockgroup'), ('Evictions per 100 rental units', '@evics'), ('Total evictions', '@evics_raw')])
 wheel_zoom = WheelZoomTool()
 p = figure(plot_height=650, plot_width=700, title='Evictions per 100 Rental Units per Block group, Durham',
            tools=[hover, wheel_zoom, 'pan', 'save', 'reset'],
@@ -90,11 +96,11 @@ def update_data(attrname, old, new):
     input = title.format(input=combine[index])
 
     # Pull just evictions data for this month/year.
-    filtered_evictions = mdf3[(mdf3['year'] == update[index]['year']) & (mdf3['month'] == update[index]['month'])]
-    # Generate the new dataset
-    update_evics = list((filtered_evictions['evictions'] * 100) / filtered_evictions["rental_units"])
+
+    filtered_evictions = filter_evictions(evictions_count, update[index]['year'], update[index]['month'])
+
     # Inject new dataset
-    source.data = dict(xs=list(filtered_evictions['xs']), ys=list(filtered_evictions['ys']), evics=update_evics, fips=list(filtered_evictions.fips),
+    source.data = dict(xs=list(filtered_evictions['xs']), ys=list(filtered_evictions['ys']), evics=list(filtered_evictions['evictions_per_rental_unit']), evics_raw=list(filtered_evictions['evictions']), fips=list(filtered_evictions.fips),
                        tract=list(filtered_evictions.tract), blockgroup=list(filtered_evictions.blockgroup))
     paragraph.text = input
 

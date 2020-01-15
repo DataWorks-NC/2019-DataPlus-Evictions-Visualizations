@@ -7,6 +7,15 @@ import settings
 import queries as q
 import functions
 
+"""
+server_lifecycle.py is a magic filename recognized by the Bokeh server within the bokeh directory, containing
+lifecycle hooks. 
+
+In this case, we're using the on_server_loaded() hook to query PostGIS and cache base data for the app in the server_context,
+which individual sessions have access to via curdoc().session_context.server_context.
+
+For more, see https://docs.bokeh.org/en/latest/docs/dev_guide/server.html#lifecycle
+"""
 
 def on_server_loaded(server_context):
     # ---------------------------------------------------------------#
@@ -22,31 +31,45 @@ def on_server_loaded(server_context):
     cursor = conn.cursor()
     # ---------------------------------------------------------------#
     # Load Data using SQL Queries
-    rental_units = """select CAST(geoid10 as NUMERIC) as fips, acs16_rent as rental_units, acs16_tota as total_units FROM staging.evictions_per_bg"""
-    blockgroup = """select fips, st_astext((ST_Dump(geom)).geom) AS geom, area__sqmi FROM geom.blockgroup"""
+    rental_units_query = """select data_year as year, rental_units, fips FROM housing.acs_rental_units__blockgroup"""
+    blockgroup_query = """select fips, st_astext((ST_Dump(geom)).geom) AS geom, area__sqmi FROM geom.blockgroup"""
     # read queries using database
-    df_blockg_m = sqlio.read_sql_query(q.evictions_by_month_by_blockgroup_2018_to_present, conn)
-    df_rental = sqlio.read_sql_query(rental_units, conn)
-    gdf_bg = sqlio.read_sql_query(blockgroup, conn)
+    evictions_by_month_by_blockgroup = sqlio.read_sql_query(q.evictions_by_month_by_blockgroup_2018_to_present, conn)
+    rental_units_by_blockgroup = sqlio.read_sql_query(rental_units_query, conn)
+    blockgroup_geometry = sqlio.read_sql_query(blockgroup_query, conn)
 
     # close connection
     conn = None
-    # ---------------------------------------------------------------#
-    # Manipulate Data for Plotting
-    df_rental['rental_units'] = df_rental['rental_units'].replace([0, 0, 0, 0], [33.0, None, None, None])
-    # Convert FIPS column into INT
-    df_blockg_m['fips'] = df_blockg_m['fips'].astype(np.int64)
-    gdf_bg['fips'] = pd.to_numeric(gdf_bg.fips)
-    # ---------------------------------------------------------------#
-    # Grab and Convert Coords from Shapefile
-    gdf_bg['geom'] = gdf_bg.geom.apply(functions.makePoly)  # convert string into Polygon object
-    gdf_bg['poly_x'] = gdf_bg.apply(functions.getPolyCoords, coord_type='x', axis=1)  # grab x coords
-    gdf_bg['poly_y'] = gdf_bg.apply(functions.getPolyCoords, coord_type='y', axis=1)  # grab y coords
-    gdf_bg['xs'] = gdf_bg.poly_x.map(functions.conv_poly_xs)  # convert x coords to be usable by Bokeh
-    gdf_bg['ys'] = gdf_bg.poly_y.map(functions.conv_poly_ys)  # convert y coords to be usable by Bokeh
 
     # ---------------------------------------------------------------#
-    # Merge Evictions Dataset with Shapefile
-    mdf3 = gdf_bg.merge(df_blockg_m, right_on='fips', left_on='fips', how='outer')
-    mdf3 = df_rental.merge(mdf3, right_on='fips', left_on='fips', how='outer')
-    server_context.mdf3 = mdf3
+
+    # ---------------------------------------------------------------#
+    # Grab and Convert Coords from Shapefile
+    # TODO: Ideally, move this into happening on the PostGIS server, but works for now.
+    blockgroup_geometry['geom'] = blockgroup_geometry.geom.apply(functions.makePoly)  # convert string into Polygon object
+    blockgroup_geometry['poly_x'] = blockgroup_geometry.apply(functions.getPolyCoords, coord_type='x', axis=1)  # grab x coords
+    blockgroup_geometry['poly_y'] = blockgroup_geometry.apply(functions.getPolyCoords, coord_type='y', axis=1)  # grab y coords
+    blockgroup_geometry['xs'] = blockgroup_geometry.poly_x.map(functions.conv_poly_xs)  # convert x coords to be usable by Bokeh
+    blockgroup_geometry['ys'] = blockgroup_geometry.poly_y.map(functions.conv_poly_ys)  # convert y coords to be usable by Bokeh
+
+    # ---------------------------------------------------------------#
+    # Merge Evictions Dataset with Shapefile and Rental Units data
+
+    # TODO: Remove this -- temporary fix b/c 2019 ACS data is not in the DB yet.
+    rental_units_by_blockgroup = rental_units_by_blockgroup.append(rental_units_by_blockgroup[rental_units_by_blockgroup['year'] == 2018].replace(2018, 2019))
+
+    # Expand out rental_units_by_blockgroup to have values for each month,year pair.
+    months = pd.DataFrame({'month': range(1, 13)})
+    months['tempkey'] = 0
+    rental_units_by_blockgroup['tempkey'] = 0
+    rental_units_by_blockgroup = rental_units_by_blockgroup.merge(months, on='tempkey', how='outer')
+    rental_units_by_blockgroup.drop(columns='tempkey')
+
+    evictions_count = rental_units_by_blockgroup.merge(evictions_by_month_by_blockgroup, on=['fips', 'year', 'month'], how='left')
+    evictions_count = blockgroup_geometry.merge(evictions_count, on='fips', how='left')
+
+    # Populate evictions per 100 rental units and set NaN values to None
+    evictions_count.loc[~(evictions_count['evictions'] >= 0), 'evictions'] = 0  # Set all missing or non-numeric values to 0 for evictions count
+    evictions_count['evictions_per_rental_unit'] = evictions_count['evictions'] * 100 / evictions_count['rental_units']
+    evictions_count.loc[~(evictions_count['rental_units'] > 0), 'evictions_per_rental_unit'] = None
+    server_context.evictions_count = evictions_count
