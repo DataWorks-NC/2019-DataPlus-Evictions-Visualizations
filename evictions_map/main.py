@@ -56,7 +56,7 @@ color_bar_plot.title.text_font_size = '12pt'
 # Figures
 hover = HoverTool(tooltips=[('Tract', '@tract'), ('Block Group', '@blockgroup'), ('Evictions per 100 rental units', '@evics'), ('Total evictions', '@evics_raw')])
 wheel_zoom = WheelZoomTool()
-p = figure(plot_height=650, plot_width=700, title='Evictions per 100 Rental Units per Block group, Durham',
+p = figure(plot_height=650, plot_width=500, title='Evictions per 100 Rental Units per Block group, Durham',
            tools=[hover, wheel_zoom, 'pan', 'save', 'reset'],
            toolbar_location='above', x_range=(-8800000, -8775000), y_range=(4250000, 4350000),
            x_axis_type='mercator', y_axis_type='mercator')
