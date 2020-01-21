@@ -13,22 +13,24 @@ def filter_evictions(evictions_dataset, year, month):
     return evictions_dataset[(evictions_dataset['year'] == year) & (evictions_dataset['month'] == month)]
 
 # setup time range
-# TODO: PUll this from the range returned by DB query so it auto-updates.
-years = ['2018', '2019']
-months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
+months_names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
           'November',
           'December']
-lower_case = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
-combine = [j + " " + i for i in years for j in months][9:-2]
-update = [{'year': int(i), 'month': j + 1} for i in years for j in range(len(months))][9:-2]
-num_unique_months = len(combine)
+num_unique_months = 18
 
 # Import data from server_context
 server_context = curdoc().session_context.server_context
 evictions_count = server_context.evictions_count
 
+# Find unique dates from dataset
+dates = evictions_count.groupby(['year', 'month'])
+dates = dates['year'].unique().keys()
+update = dates[(-1*num_unique_months-1):-1] # (year, month) pairs for most recent 18 months in dataset, but cut most recent month because server tends to report empty data there.
+update = [{'year': d[0], 'month': d[1], 'name': f'{months_names[d[1] - 1]} {d[0]}'} for d in update]
+cur_date = update[-1]
+
 # Pull latest data for initial display
-initial_filtered_evictions = filter_evictions(evictions_count, update[-1]['year'], update[-1]['month'])
+initial_filtered_evictions = filter_evictions(evictions_count, cur_date['year'], cur_date['month'])
 
 source = ColumnDataSource(
         data=dict(xs=list(initial_filtered_evictions['xs']), ys=list(initial_filtered_evictions['ys']), evics=list(initial_filtered_evictions['evictions_per_rental_unit']), evics_raw=list(initial_filtered_evictions['evictions']),
@@ -58,14 +60,14 @@ hover = HoverTool(tooltips=[('Tract', '@tract'), ('Block Group', '@blockgroup'),
 wheel_zoom = WheelZoomTool()
 p = figure(plot_height=650, plot_width=500, title='Evictions per 100 Rental Units per Block group, Durham',
            tools=[hover, wheel_zoom, 'pan', 'save', 'reset'],
-           toolbar_location='above', x_range=(-8800000, -8775000), y_range=(4250000, 4350000),
+           toolbar_location='above', x_range=(-8785000, -8775000), y_range=(4280000, 4335000),
            x_axis_type='mercator', y_axis_type='mercator')
 
 # ---------------------------------------------------------------#
 # Map Setup
 p.axis.visible = False
 p.grid.grid_line_color = None
-p.add_tile(get_provider(Vendors.CARTODBPOSITRON))
+p.add_tile(get_provider(Vendors.STAMEN_TONER))
 p.grid.grid_line_color = None
 p.axis.visible = True
 p.toolbar.active_scroll = wheel_zoom
@@ -82,7 +84,7 @@ year = Slider(title='', value=num_unique_months - 1, start=0, end=num_unique_mon
                callback_throttle=500)
 
 year.show_value = False
-paragraph = Paragraph(text='October 2019', width=200, height=8) # TODO: This initial value also needs to update dynamically
+paragraph = Paragraph(text=cur_date['name'], width=200, height=8) # TODO: This initial value also needs to update dynamically
 paragraph.default_size = 500
 opacity = Button(label='Full Opacity')
 
@@ -92,8 +94,6 @@ opacity = Button(label='Full Opacity')
 def update_data(attrname, old, new):
     # Transition Sliders
     index = year.value
-    title = '''{input}'''
-    input = title.format(input=combine[index])
 
     # Pull just evictions data for this month/year.
 
@@ -102,7 +102,7 @@ def update_data(attrname, old, new):
     # Inject new dataset
     source.data = dict(xs=list(filtered_evictions['xs']), ys=list(filtered_evictions['ys']), evics=list(filtered_evictions['evictions_per_rental_unit']), evics_raw=list(filtered_evictions['evictions']), fips=list(filtered_evictions.fips),
                        tract=list(filtered_evictions.tract), blockgroup=list(filtered_evictions.blockgroup))
-    paragraph.text = input
+    paragraph.text = update[index]['name']
 
 
 year.on_change('value_throttled', update_data)
