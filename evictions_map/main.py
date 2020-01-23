@@ -44,7 +44,7 @@ palette = brewer['YlGnBu'][5]
 palette = palette[::-1]
 color_mapper = LogColorMapper(palette=palette, low=0, high=evictions_count['evictions_per_rental_unit'].max())
 color_bar = ColorBar(color_mapper=color_mapper, label_standoff=8, width=20, ticker=FixedTicker(ticks=[0, 2, 5, 10, 50]),
-                     major_tick_line_color='#000000', major_tick_out=5, major_tick_width=2,
+                     major_tick_line_color='#000000', major_tick_out=5,
                      height=500, location=(0, 0))
 color_bar_plot = figure(title="Evictions per 100 Rental Units", title_location="right",
                         height=color_bar_height, width=color_bar_width,
