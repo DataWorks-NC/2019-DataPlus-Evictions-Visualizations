@@ -1,6 +1,6 @@
 from bokeh.io import curdoc
 from bokeh.layouts import row, column, widgetbox
-from bokeh.models import ColumnDataSource, AdaptiveTicker, LogColorMapper, ColorBar, HoverTool, \
+from bokeh.models import ColumnDataSource, FixedTicker, LogColorMapper, ColorBar, HoverTool, \
     WheelZoomTool
 from bokeh.models.widgets import Slider, Paragraph, Button
 from bokeh.plotting import figure
@@ -40,11 +40,12 @@ source = ColumnDataSource(
 # Palette Setup / ColorBar
 color_bar_height = 650 + 11
 color_bar_width = 120
-palette = brewer['YlGnBu'][8]
+palette = brewer['YlGnBu'][5]
 palette = palette[::-1]
 color_mapper = LogColorMapper(palette=palette, low=0, high=evictions_count['evictions_per_rental_unit'].max())
-color_bar = ColorBar(color_mapper=color_mapper, ticker=AdaptiveTicker(base=10, mantissas=[1, 2, 5]), label_standoff=8, width=20,
-                     height=500, border_line_color=None, location=(0, 75))
+color_bar = ColorBar(color_mapper=color_mapper, label_standoff=8, width=20, ticker=FixedTicker(ticks=[0, 2, 5, 10, 50]),
+                     major_tick_line_color='#000000', major_tick_out=5, major_tick_width=2,
+                     height=500, location=(0, 0))
 color_bar_plot = figure(title="Evictions per 100 Rental Units", title_location="right",
                         height=color_bar_height, width=color_bar_width,
                         toolbar_location=None, min_border=0,
@@ -69,7 +70,6 @@ p.axis.visible = False
 p.grid.grid_line_color = None
 p.add_tile(get_provider(Vendors.STAMEN_TONER))
 p.grid.grid_line_color = None
-p.axis.visible = True
 p.toolbar.active_scroll = wheel_zoom
 
 # ---------------------------------------------------------------#
@@ -86,7 +86,7 @@ year = Slider(title='', value=num_unique_months - 1, start=0, end=num_unique_mon
 year.show_value = False
 paragraph = Paragraph(text=cur_date['name'], width=200, height=8) # TODO: This initial value also needs to update dynamically
 paragraph.default_size = 500
-opacity = Button(label='Full Opacity')
+opacity = Button(label='Show Streets')
 
 
 # ---------------------------------------------------------------#
@@ -110,11 +110,11 @@ paragraph.on_change('text', update_data)
 
 
 def update_opacity():
-    if (opacity.label == 'Full Opacity'):
-        opacity.label = 'Half Opacity'
+    if (opacity.label == 'Show Streets'):
+        opacity.label = 'Hide Streets'
         r.glyph.fill_alpha = 0.5
     else:
-        opacity.label = 'Full Opacity'
+        opacity.label = 'Show Streets'
         r.glyph.fill_alpha = 1
 
 
