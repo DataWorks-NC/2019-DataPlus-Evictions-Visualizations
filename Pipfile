@@ -13,5 +13,8 @@ geopandas = "==0.*"
 psycopg2 = "==2.*"
 python-dotenv = "*"
 
+# Branch 3.x of pyproj won't build on heroku, see https://devcenter.heroku.com/articles/python-c-deps
+pyproj="==2.*"
+
 [requires]
 python_version = "3.7"
