@@ -28,7 +28,7 @@ evictions_count = server_context.evictions_count
 # Find unique dates from dataset
 dates = evictions_count.groupby(['year', 'month'])
 dates = dates['year'].unique().keys()
-update = dates[(-1*num_unique_months-1):-1] # (year, month) pairs for most recent 18 months in dataset, but cut most recent month because server tends to report empty data there.
+update = dates[(-1*num_unique_months-1):-2] # (year, month) pairs for most recent 18 months in dataset, but cut most recent 2 months because server tends to report empty data there.
 update = [{'year': d[0], 'month': d[1], 'name': f'{months_names[d[1] - 1]} {d[0]}'} for d in update]
 cur_date = update[-1]
 
@@ -50,7 +50,7 @@ source = ColumnDataSource(
 # Palette Setup / ColorBar
 color_bar_height = 650 + 11
 color_bar_width = 120
-color_mapper = LogColorMapper(palette=palette, low=0.00001, high=evictions_count['evictions_per_rental_unit'].max())
+color_mapper = LogColorMapper(palette=palette, low=0.25, high=evictions_count['evictions_per_rental_unit'].max())
 color_bar = ColorBar(color_mapper=color_mapper, label_standoff=8, width=20, ticker=FixedTicker(ticks=[0, 2, 5, 10, 50]),
                      major_tick_line_color='#000000', major_tick_out=5,
                      height=500, location=(0, 0))
