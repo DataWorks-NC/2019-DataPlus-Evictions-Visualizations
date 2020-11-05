@@ -8,7 +8,7 @@ import queries as q
 import functions
 
 """
-server_lifecycle.py is a magic filename recognized by the Bokeh server within the bokeh directory, containing
+app_hooks.py is a magic filename recognized by the Bokeh server within the bokeh directory, containing
 lifecycle hooks. 
 
 In this case, we're using the on_server_loaded() hook to query PostGIS and cache base data for the app in the server_context,
@@ -33,6 +33,7 @@ def on_server_loaded(server_context):
     # Load Data using SQL Queries
     rental_units_query = """select data_year as year, rental_units, fips FROM housing.acs_rental_units__blockgroup"""
     blockgroup_query = """select fips, st_astext((ST_Dump(geom)).geom) AS geom, area__sqmi FROM geom.blockgroup"""
+
     # read queries using database
     evictions_by_month_by_blockgroup = sqlio.read_sql_query(q.evictions_by_month_by_blockgroup_2018_to_present, conn)
     rental_units_by_blockgroup = sqlio.read_sql_query(rental_units_query, conn)
@@ -57,6 +58,7 @@ def on_server_loaded(server_context):
 
     # TODO: Remove this -- temporary fix b/c 2019 ACS data is not in the DB yet.
     rental_units_by_blockgroup = rental_units_by_blockgroup.append(rental_units_by_blockgroup[rental_units_by_blockgroup['year'] == 2018].replace(2018, 2019))
+    rental_units_by_blockgroup = rental_units_by_blockgroup.append(rental_units_by_blockgroup[rental_units_by_blockgroup['year'] == 2018].replace(2018, 2020))
 
     # Expand out rental_units_by_blockgroup to have values for each month,year pair.
     months = pd.DataFrame({'month': range(1, 13)})

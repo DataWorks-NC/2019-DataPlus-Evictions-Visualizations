@@ -100,7 +100,18 @@ etm_2012_2019 = """select
     case when src.data_year = 2019 and src.status_date = 9 then 1 else 0 end as Sep_2019,
     case when src.data_year = 2019 and src.status_date = 10 then 1 else 0 end as Oct_2019,
     case when src.data_year = 2019 and src.status_date = 11 then 1 else 0 end as Nov_2019,
-    case when src.data_year = 2019 and src.status_date = 12 then 1 else 0 end as Dec_2019
+    case when src.data_year = 2019 and src.status_date = 12 then 1 else 0 end as Dec_2019,
+    case when src.data_year = 2020 and src.status_date = 1 then 1 else 0 end as Jan_2020,
+    case when src.data_year = 2020 and src.status_date = 2 then 1 else 0 end as Feb_2020,
+    case when src.data_year = 2020 and src.status_date = 3 then 1 else 0 end as Mar_2020,
+    case when src.data_year = 2020 and src.status_date = 4 then 1 else 0 end as Apr_2020,
+    case when src.data_year = 2020 and src.status_date = 5 then 1 else 0 end as May_2020,
+    case when src.data_year = 2020 and src.status_date = 6 then 1 else 0 end as Jun_2020,
+    case when src.data_year = 2020 and src.status_date = 7 then 1 else 0 end as Jul_2020,
+    case when src.data_year = 2020 and src.status_date = 8 then 1 else 0 end as Aug_2020,
+    case when src.data_year = 2020 and src.status_date = 9 then 1 else 0 end as Sep_2020,
+    case when src.data_year = 2020 and src.status_date = 10 then 1 else 0 end as Oct_2020,
+    case when src.data_year = 2020 and src.status_date = 11 then 1 else 0 end as Nov_2020
 FROM (
 SELECT
        h.docket_num,
@@ -385,7 +396,18 @@ ebm_2012_2019 = """select
     case when src.data_year = 2019 and src.status_date = 9 then 1 else 0 end as Sep_2019,
     case when src.data_year = 2019 and src.status_date = 10 then 1 else 0 end as Oct_2019,
     case when src.data_year = 2019 and src.status_date = 11 then 1 else 0 end as Nov_2019,
-    case when src.data_year = 2019 and src.status_date = 12 then 1 else 0 end as Dec_2019
+    case when src.data_year = 2019 and src.status_date = 12 then 1 else 0 end as Dec_2019,
+    case when src.data_year = 2020 and src.status_date = 1 then 1 else 0 end as Jan_2020,
+    case when src.data_year = 2020 and src.status_date = 2 then 1 else 0 end as Feb_2020,
+    case when src.data_year = 2020 and src.status_date = 3 then 1 else 0 end as Mar_2020,
+    case when src.data_year = 2020 and src.status_date = 4 then 1 else 0 end as Apr_2020,
+    case when src.data_year = 2020 and src.status_date = 5 then 1 else 0 end as May_2020,
+    case when src.data_year = 2020 and src.status_date = 6 then 1 else 0 end as Jun_2020,
+    case when src.data_year = 2020 and src.status_date = 7 then 1 else 0 end as Jul_2020,
+    case when src.data_year = 2020 and src.status_date = 8 then 1 else 0 end as Aug_2020,
+    case when src.data_year = 2020 and src.status_date = 9 then 1 else 0 end as Sep_2020,
+    case when src.data_year = 2020 and src.status_date = 10 then 1 else 0 end as Oct_2020,
+    case when src.data_year = 2020 and src.status_date = 11 then 1 else 0 end as Nov_2020
 FROM (
 SELECT
        h.docket_num,

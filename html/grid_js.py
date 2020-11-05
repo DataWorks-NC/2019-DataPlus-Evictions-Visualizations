@@ -60,12 +60,12 @@ callback = CustomJS(args=dict(n_min=n_min, n_max=n_max, e_min=e_min, e_max=e_max
     if (cb_obj.value == 'Normalized Ejectments') {
         mapper.low = n_min;
         mapper.high = n_max;
-        r.glyph.fill_color = {'field': 'normalize', 'transform': mapper}
+        choropleth_layer.glyph.fill_color = {'field': 'normalize', 'transform': mapper}
     }
     if (cb_obj.value == 'Standard Ejectments') {
         mapper.low = e_min;
         mapper.high = e_max;
-        r.glyph.fill_color = {'field': 'evictions', 'transform': mapper}
+        choropleth_layer.glyph.fill_color = {'field': 'evictions', 'transform': mapper}
     }
     """)
 select.js_on_change('value', callback)

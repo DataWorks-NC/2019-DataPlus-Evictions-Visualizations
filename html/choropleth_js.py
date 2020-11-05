@@ -157,7 +157,7 @@ callback_census = CustomJS(args=dict(select_time=select_time, source=source, p=p
     		p.title.text = 'Tract Evictions, Durham';
     		color_mapper.low = 0;
     		color_mapper.high = 100;
-   			r.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
+   			choropleth_layer.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
     		paragraph.visible = true;
     		year2.visible = false;
         	year.visible = true;
@@ -169,7 +169,7 @@ callback_census = CustomJS(args=dict(select_time=select_time, source=source, p=p
     		p.title.text = 'Tract Evictions, Durham';
     		color_mapper.low = 0;
     		color_mapper.high = 650;
-    		r.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
+    		choropleth_layer.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
     		paragraph.visible = false;
 	        year.visible = false;
 	        year2.visible = true;
@@ -181,7 +181,7 @@ callback_census = CustomJS(args=dict(select_time=select_time, source=source, p=p
     		p.title.text = 'BlockGroup Evictions, Durham';
     		color_mapper.low = 0;
     		color_mapper.high = 75;
-    		r.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
+    		choropleth_layer.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
     		paragraph.visible = true;
 	        year2.visible = false;
 	        year.visible = true;
@@ -193,7 +193,7 @@ callback_census = CustomJS(args=dict(select_time=select_time, source=source, p=p
     		p.title.text = 'BlockGroup Evictions, Durham';
     		color_mapper.low = 0;
     		color_mapper.high = 500;
-    		r.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
+    		choropleth_layer.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
     		paragraph.visible = false;
 	        year.visible = false;
 	        year2.visible = true;
@@ -220,7 +220,7 @@ callback_time = CustomJS(args=dict(select_census=select_census, source=source, p
     		p.title.text = 'Tract Evictions, Durham';
     		color_mapper.low = 0;
     		color_mapper.high = 650;
-    		r.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
+    		choropleth_layer.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
     		paragraph.visible = false;
 	        year.visible = false;
 	        year2.visible = true;
@@ -232,7 +232,7 @@ callback_time = CustomJS(args=dict(select_census=select_census, source=source, p
     		p.title.text = 'BlockGroup Evictions, Durham';
     		color_mapper.low = 0;
     		color_mapper.high = 75;
-    		r.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
+    		choropleth_layer.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
     		paragraph.visible = true;
 	        year2.visible = false;
 	        year.visible = true;
@@ -244,7 +244,7 @@ callback_time = CustomJS(args=dict(select_census=select_census, source=source, p
     		p.title.text = 'BlockGroup Evictions, Durham';
     		color_mapper.low = 0;
     		color_mapper.high = 500;
-    		r.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
+    		choropleth_layer.glyph.fill_color = {'field': 'evics', 'transform': color_mapper};
     		paragraph.visible = false;
 	        year.visible = false;
 	        year2.visible = true;
@@ -257,7 +257,7 @@ callback_time = CustomJS(args=dict(select_census=select_census, source=source, p
 select_time.js_on_change('value', callback_time)
 
 callback_opacity = CustomJS(args=dict(r=r), code="""
-        r.glyph.fill_alpha = cb_obj.value;
+        choropleth_layer.glyph.fill_alpha = cb_obj.value;
     """) 
 opacity.js_on_change('value', callback_opacity)
 #---------------------------------------------------------------#

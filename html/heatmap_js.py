@@ -93,7 +93,7 @@ callback =  CustomJS(args=dict(s1=s1, s2=s2, s3=s3, s4=s4, paragraph=paragraph),
 year.js_on_change('value',callback)
 
 callback_opacity = CustomJS(args=dict(r=r), code="""
-        r.glyph.global_alpha = cb_obj.value;
+        choropleth_layer.glyph.global_alpha = cb_obj.value;
     """) 
 opacity.js_on_change('value', callback_opacity)
 #---------------------------------------------------------------#
